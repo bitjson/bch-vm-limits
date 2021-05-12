@@ -100,11 +100,11 @@ A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256
 Before any hashing function is called, the expected cost of the call – in terms of digest iterations – is added to a cumulative total for the evaluation. If the total required digest iterations exceeds `660`, the operation produces an error.
 
 <details>
- <summary>Selection of <code>660</code> Digest Iteration Maximum</summary>
+ <summary><b>Selection of <code>660</code> Digest Iteration Maximum</b></summary>
 
 At a Maximum Digest Iteration of `660`, this `Hashing Limit` effectively replaces the existing `Stack Element Size Limit` and `Operation Limit`.
 
-As of May 2021, the most computationally-expensive known contract is the [`Pre-Deployment Hashing Performance Test`](#pre-deployment-hashing-performance-test), which requires 3 operations to produce 10 SHA-256 digest iterations:
+As of May 2021, the most computationally-expensive known contract is the [`Pre-Deployment Hashing Limit Benchmark`](#pre-deployment-hashing-limit-benchmark), which requires 3 operations to produce 10 SHA-256 digest iterations:
 
 ```
 <0> <520> OP_NUM2BIN OP_HASH256 OP_DROP  // bytecode:   0x0002080280aa75
@@ -187,7 +187,7 @@ Prior to calling their internal SHA-256 operation, the `OP_CHECKDATASIG` and `OP
 A new limit is placed on all operations which push or modify elements on the stack: after each operation, the total cumulative byte-length of all stack elements may not exceed `130,000` bytes.
 
 <details>
- <summary>Selection of <code>130,000</code> Byte Stack Memory Usage Limit</summary>
+ <summary><b>Selection of <code>130,000</code> Byte Stack Memory Usage Limit</b></summary>
 
 Prior to the this proposal, stack memory usage is limited by a combination of the (520-byte) stack element size limit and the (201) operation limit. The following contract demonstrates the largest possible (standard P2SH) memory consumption:
 
@@ -332,7 +332,7 @@ Please see the following reference implementations for additional examples and t
 ## Feedback & Reviews
 
 - [`Raising the 520 byte push limit & 201 operation limit` – Feb 8, 2021 | bitcoincashresearch.org](https://bitcoincashresearch.org/t/raising-the-520-byte-push-limit-201-operation-limit/282)
-- [`CHIP: Targeted Virtual Machine Limits` – May 12, 2021 | bitcoincashresearch.org]()
+- [`CHIP: Targeted Virtual Machine Limits` – May 12, 2021 | bitcoincashresearch.org](https://bitcoincashresearch.org/t/chip-targeted-virtual-machine-limits/437)
 
 ## Copyright
 
