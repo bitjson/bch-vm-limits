@@ -6,54 +6,61 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2021-05-12
+        Latest Revision Date: 2024-02-02
 
 ## Summary
 
-This proposal replaces several poorly-targeted virtual machine (VM) limits with alternatives which protect against the same malicious cases while significantly increasing the power of the Bitcoin Cash contract system:
+This proposal replaces several poorly-targeted virtual machine (VM) limits with alternatives that protect against the same malicious cases, while significantly increasing the power of the Bitcoin Cash contract system:
 
-- the 520-byte stack element size limit is raised to 10,000 bytes.
 - The 201 operation limit is removed.
-- A new cumulative hashing limit is introduced, limiting contracts to 660 digest iterations per evaluation.
-- A new stack memory usage limit is introduced, limiting contracts to 130,000 bytes of data on the stack.
+- The 520-byte stack element length limit is raised to 10,000 bytes, a constant equal to the consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE`) prior to this proposal.
+- A new cumulative hashing limit is introduced, limiting contracts to 1000 digest iterations per evaluation, the effective limit prior to this proposal.
+- A new stack memory usage limit is introduced, limiting contracts to 130,000 bytes of data on the stack, a constant rounded up from the effective limit prior to this proposal.
 
-This proposal **intentionally avoids modifying other properties of the current VM**:
+This proposal **intentionally avoids modifying other existing properties of the VM**:
 
-- The limits on maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes), maximum standard transaction byte-length (A.K.A. `MAX_STANDARD_TX_SIZE` – 100,000 bytes) and consensus-maximum transaction byte-length (A.K.A. `MAX_TX_SIZE` – 1,000,000 bytes) are not modified.
+- The limits on signature operation count (A.K.A. `SigChecks`) density, maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes), maximum standard transaction byte-length (A.K.A. `MAX_STANDARD_TX_SIZE` – 100,000 bytes) and consensus-maximum transaction byte-length (A.K.A. `MAX_TX_SIZE` – 1,000,000 bytes) are not modified.
 - The cost and incentives around blockchain “data storage” are not measurably affected.
 - The worst-case transaction validation processing and memory requirements of the VM are not measurably affected.
 
 ## Deployment
 
-Deployment of this specification is proposed for the May 2022 upgrade.
+Deployment of this specification is proposed for the May 2025 upgrade.
+
+- Activation is proposed for `1731672000` MTP, (`2024-11-15T12:00:00.000Z`) on `chipnet`.
+- Activation is proposed for `1747310400` MTP, (`2025-05-15T12:00:00.000Z`) on the BCH network (`mainnet`), `testnet3`, `testnet4`, and `scalenet`.
 
 ## Motivation
 
 Bitcoin Cash contracts are strictly limited to prevent maliciously-designed transactions from requiring excessive resources during transaction validation. Two of these limits are poorly-targeted, unintentionally preventing valuable use cases.
 
-- The **520-byte stack element size limit** (A.K.A. `MAX_SCRIPT_ELEMENT_SIZE`) currently prevents items longer than 520 bytes from being pushed, `OP_NUM2BIN`ed, or `OP_CAT`ed on to the stack.
-- The **201 operation limit** prevents contracts with more than 201 non-push operations from being broadcasted on the network or mined blocks.
+- The **520-byte stack element length limit** (A.K.A. `MAX_SCRIPT_ELEMENT_SIZE`) currently prevents items longer than 520 bytes from being pushed, `OP_NUM2BIN`ed, or `OP_CAT`ed on to the stack. This also limits the length of Pay-To-Script-Hash (P2SH) redeem bytecode to 520 bytes.
+- The **201 operation limit** prevents contracts with more than 201 non-push operations from being relayed on the network or mined in blocks.
 
 Together, these limits:
 
-- [cap maximum stack memory usage to ~130,000 bytes](#stack-memory-usage-limit), and
-- cap the maximum processing requirements of the VM to [660 digest iterations of SHA-256 hashing](#hashing-limit).
+- [Cap maximum stack memory usage to ~130,000 bytes](#stack-memory-usage-limit), and
+- Cap the maximum processing requirements of the VM to [1000 digest iterations of SHA-256 hashing](#hashing-limit).
 
-While these limits have been sufficient to prevent Denial of Service (DOS) attacks by capping the maximum cost of transaction validation, their current design prevents many valuable contract use cases.
+While these limits have been sufficient to prevent Denial of Service (DOS) attacks by capping the maximum cost of transaction validation, their current design prevents valuable contract use cases and wastefully increases the size of certain transactions.
 
 ## Benefits
 
-By replacing these limits with better-tuned alternatives, the Bitcoin Cash contract system can be made more powerful without sacrificing node validation performance.
+By replacing these limits with better-tuned alternatives, the Bitcoin Cash contract system can be made more powerful and efficient, without sacrificing node validation performance.
 
-### Enables More Advanced Contracts
+### More Advanced Contracts
 
-The 201 operation limit prevents significant innovation by forcing contracts to limit functionality. The 520-byte stack element size limit prevents additional use cases because Pay-To-Script-Hash (P2SH) contracts must push their "redeem" bytecode to the stack prior to evaluation. The 520-byte stack element size limit also prevents the use of larger hash preimages in contracts which inspect parent transactions or utilize `OP_CHECKDATASIG`.
+The 520-byte stack element length limit prevents additional use cases by limiting the length of Pay-To-Script-Hash (P2SH) contracts, as P2SH redeem bytecode is pushed to the stack prior to evaluation. Additionally, the element length limit also prevents the use of larger hash preimages, e.g. in contracts which inspect parent transactions or utilize `OP_CHECKDATASIG`.
 
-By increasing these limits, more advanced contracts can be supported.
+By raising this limit, more advanced contracts can be supported.
 
-### Enables More Efficient Contracts
+### More Efficient Contracts
 
-The 520-byte limit sometimes forces contract authors to design less byte-efficient contracts in order to fit contract code into 520 bytes; rather than embedding small data elements directly in the contract code, authors are forced to pick and validate data from the unlocking bytecode, wasting transaction space. By removing this limit on P2SH contracts, many contracts can be made more efficient.
+The 520-byte stack element length limit sometimes requires contract authors to design less byte-efficient contracts in order to fit contract code into 520 bytes. For example, rather than embedding data elements directly in P2SH redeem bytecode, authors may be required to pick and validate data from the unlocking bytecode, wasting transaction space.
+
+Likewise, both the stack element length limit and the 201 operation limit sometimes require contract authors to offload validation to additional outputs, increasing transaction sizes with otherwise-unnecessary overhead.
+
+With better-targeted VM limits, many contracts can be made more efficient.
 
 ## Costs & Risk Mitigation
 
@@ -79,41 +86,54 @@ Wallets and other services may also upgrade to add support for new contracts whi
 
 ## Technical Specification
 
-The existing **`Stack Element Size Limit`** is modified, the **`Operation Limit`** is removed, and two new limits are introduced: a **`Hashing Limit`** and a **`Stack Memory Usage Limit`**.
+The existing **`Stack Element Size Limit`** is raised, the **`Operation Limit`** is removed, and two new limits are introduced: a **`Hashing Limit`** and a **`Stack Memory Usage Limit`**.
 
-### Increased Stack Element Size Limit
+### Increased Stack Element Length Limit
 
 The existing 520-byte stack element size limit (A.K.A. `MAX_SCRIPT_ELEMENT_SIZE`) is raised to 10,000 bytes.
 
-> Note: this increases the maximum size of stack elements to be equal to the maximum allowed VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE`).
+<details>
+<summary>Note on Increase of Stack Element Length Limit</summary>
+
+This increases the maximum size of stack elements to be equal to the maximum allowed VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes). The maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes) is unchanged.
+
+</details>
 
 ### Removal of Operation Limit
 
 The existing 201-operation limit per evaluation (A.K.A. `MAX_OPS_PER_SCRIPT`) is removed.
 
-> Note: after activation of this proposal, operation count no longer requires tracking in the VM. The below `Hashing Limit` and `Stack Memory Limit` cover all pathological constructions which might be prevented by the operation limit.
+<details>
+<summary>Note on Replacement of Operation Limit</summary>
+
+After activation of this proposal, operation count no longer requires tracking in the VM. The below `Hashing Limit` and `Stack Memory Usage Limit` cover all [pathological constructions](#benchmarks) which might be prevented by the operation limit.
+
+</details>
 
 ### Hashing Limit
 
 A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), `OP_HASH256` (`0xaa`), `OP_CHECKDATASIG` (`0xba`), and `OP_CHECKDATASIGVERIFY` (`0xbb`) to prevent excessive hashing function usage.
 
-Before any hashing function is called, the expected cost of the call – in terms of digest iterations – is added to a cumulative total for the evaluation. If the total required digest iterations exceeds `660`, the operation produces an error.
+Before any hashing function is called, the expected cost of the call – in terms of digest iterations – is added to a cumulative total for the evaluation. If the total required digest iterations exceeds `1000`, the operation produces an error.
 
 <details>
- <summary><b>Selection of <code>660</code> Digest Iteration Maximum</b></summary>
+<summary><b>Selection of <code>1000</code> Digest Iteration Maximum</b></summary>
 
-At a Maximum Digest Iteration of `660`, this `Hashing Limit` effectively replaces the existing `Stack Element Size Limit` and `Operation Limit`.
+At a Maximum Digest Iteration of `1000`, this `Hashing Limit` replaces the combined effect of the existing `Stack Element Length Limit` and `Operation Limit`.
 
-As of May 2021, the most computationally-expensive known contract is the [`Pre-Deployment Hashing Limit Benchmark`](#pre-deployment-hashing-limit-benchmark), which requires 3 operations to produce 10 SHA-256 digest iterations:
+Prior to deployment of this proposal, the most hashing-intensive (standard P2SH) contract is the [`Pre-Deployment Hashing Limit Benchmark`](#pre-deployment-hashing-limit-benchmark), which requires 2 operations to produce 10 unique (memoization-resistant) SHA-256 digest iterations:
 
 ```
-<0> <520> OP_NUM2BIN OP_HASH256 OP_DROP  // bytecode:   0x0002080280aa75
-<1> <520> OP_NUM2BIN OP_HASH256 OP_DROP  // bytecode:   0x5102080280aa75
-...
-<65> <520> OP_NUM2BIN OP_HASH256 OP_DROP // bytecode: 0x014202080280aa75
+Unlock:
+<1>
+
+Lock:
+<0> <520> OP_NUM2BIN OP_HASH256       // bytecode:   0x0002080280aa
+<520> OP_NUM2BIN OP_HASH256 [...99x]  // bytecode:   0x02080280aa
+OP_DROP
 ```
 
-Each `<N> <520> OP_BIN2NUM OP_HASH256 OP_DROP` line requires between 7-8 bytes and 3 operations. In each line, the first round of SHA-256 requires 9 digest iterations, and the second round of SHA-256 operates on the 32-byte result of the first, requiring one additional digest iteration. At a limit of 201 operations, 66 such lines of 10 digest iterations can be included in a valid contract, totalling 660 digest iterations.
+This contract requires exactly 201 operations and a 506 byte unlocking bytecode (including a 502 byte push of the P2SH redeem bytecode). In each line, the first round of SHA-256 requires 9 digest iterations, and the second round of SHA-256 operates on the 32-byte result of the first, requiring one additional digest iteration. At a total of 100 lines, this contract requires exactly 1000 digest iterations.
 
 </details>
 
@@ -130,7 +150,7 @@ int digest_iterations (int message_length) {
 ```
 
 <details>
- <summary>JS</summary>
+<summary>Calculate Digest Iterations in JavaScript</summary>
 
 ```js
 const digestIterations = (messageLength) =>
@@ -140,7 +160,7 @@ const digestIterations = (messageLength) =>
 </details>
 
 <details>
- <summary>Digest Iteration Count Test Vectors</summary>
+<summary>Digest Iteration Count Test Vectors</summary>
 
 | Message Length (Bytes) | Digest Iterations |
 | ---------------------- | ----------------- |
@@ -159,37 +179,38 @@ const digestIterations = (messageLength) =>
 | 504                    | 9                 |
 | 1015                   | 16                |
 | 1016                   | 17                |
-| 42231                  | 660               |
-| 42232                  | 661               |
+| 63928                  | 1000              |
+| 63991                  | 1000              |
+| 63992                  | 1001              |
 
 </details>
 
-> Note: each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses a [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) with a `block size` of 512 bits (64 bytes), so the number of message blocks/digest iterations required for every message size is equal among all VM-supported hashing functions.
+<details>
+<summary>Note on 64-Byte Message Block Size</summary>
 
-#### Single-Round Hashing Operations
+Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses a [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) with a `block size` of 512 bits (64 bytes), so the number of message blocks/digest iterations required for every message size is equal among all VM-supported hashing functions.
 
-Prior to calling their respective hashing functions, the `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), and `OP_SHA256` (`0xa8`) operations must compute the expected digest iterations for the length of the message to be hashed, adding to the evaluation's total digest iterations. If the new total exceeds the limit, the operation produces an error.
+</details>
 
-#### Double-Round Hashing Operations
+#### Hashing Operations
 
-Prior to calling their respective hashing functions, the `OP_HASH160` (`0xa9`), `OP_HASH256` (`0xaa`) operations must compute the expected digest iterations for the length of the message to be hashed.
+Prior to calling their respective hashing functions, the `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), and `OP_HASH256` (`0xaa`) operations must compute the expected digest iterations for the length of the message to be hashed, adding to the result to the evaluation's count of total digest iterations. If the new total exceeds the limit, the operation produces an error.
 
-> Note: double-round hashing operations pass the 32-byte result of their initial SHA-256 hashing round into their second round, requiring one additional digest iteration beyond the single-round `OP_SHA256`.
+<details>
+<summary>Note on Two-Round Hashing Operations</summary>
 
-If the total of digest iterations exceeds the limit, the operation produces an error.
+The two-round hashing operations – `OP_HASH160` (`0xa9`) and `OP_HASH256` (`0xaa`) – pass the 32-byte result of their initial SHA-256 hashing round into their second round, requiring one additional digest iteration beyond the single-round `OP_SHA256`.
 
-#### `OP_CHECKDATASIG` and `OP_CHECKDATASIGVERIFY` Operations
-
-Prior to calling their internal SHA-256 operation, the `OP_CHECKDATASIG` and `OP_CHECKDATASIGVERIFY` operations must compute the expected digest iterations for the length of the message to be hashed. If the new total exceeds the limit, the operation produces an error.
+</details>
 
 ### Stack Memory Usage Limit
 
 A new limit is placed on all operations which push or modify elements on the stack: after each operation, the total cumulative byte-length of all stack elements may not exceed `130,000` bytes.
 
 <details>
- <summary><b>Selection of <code>130,000</code> Byte Stack Memory Usage Limit</b></summary>
+<summary><b>Selection of <code>130,000</code> Byte Stack Memory Usage Limit</b></summary>
 
-Prior to the this proposal, stack memory usage is limited by a combination of the (520-byte) stack element size limit and the (201) operation limit. The following contract demonstrates the largest possible (standard P2SH) memory consumption:
+Prior to the this proposal, stack memory usage is limited by a combination of the (520-byte) stack element length limit and the (201) operation limit. The following contract demonstrates the largest possible (standard P2SH) memory consumption:
 
 ```
 OP_1
@@ -209,25 +230,35 @@ At peak, this contract requires `125,320` bytes of memory to hold the raw byteco
 
 #### Computing Stack Memory Usage
 
-For consensus purposes, `stack memory usage` is the total byte-length of all stack element contents plus the count of stack elements.
+For consensus purposes, `stack memory usage` is the total byte-length of all stack element contents, without regard for the depth of the stack. (The existing 1000-item stack depth limit remains in place.)
 
-For example, a stack of `['', '01', '0203']` contains 3 elements: element `0` is empty, element `1` contains one byte (`0x01`), and element `2` contains two bytes (`0x0203`). The memory usage of this stack is `6`: `3` bytes hold element values, and the stack depth is `3`.
+For example, a stack of `['', '0102', '030405']` contains 3 elements: element `0` is empty, element `1` contains two bytes (`0x0102`), and element `2` contains three bytes (`0x030405`). The memory usage of this stack is 5 bytes: zero bytes for element `0`, 2 bytes for element `1`, and 3 bytes for element `2`.
 
-> Implementation note: computing stack memory usage can become expensive in poorly-optimized stack implementations. To avoid Denial of Service (DOS) vulnerabilities, implementations should ensure that their [worst-case stack memory usage computation](#benchmark-stack-memory-check-at-maximum-depth) remains insignificant when compared with [worst-case hashing performance](#pre-deployment-hashing-limit-benchmark).
+<details>
+<summary>Implementation Note</summary>
+
+Computing stack memory usage can become expensive in poorly-optimized stack implementations. To avoid Denial of Service (DOS) vulnerabilities, implementations should ensure that their [worst-case stack memory usage computation](#benchmark-stack-memory-check-at-maximum-depth) remains insignificant when compared with [worst-case hashing performance](#pre-deployment-hashing-limit-benchmark).
+
+</details>
 
 ### Benchmarks
 
-The following contracts are provided for testing worst-case implementation performance.
+The following contracts are provided for testing worst-case implementation performance. For interactive examples, see [this template in Bitauth IDE](https://ide.bitauth.com/import-gist/).
 
 #### Pre-Deployment Hashing Limit Benchmark
 
-This benchmark measures the worst-known transaction validation performance prior to deployment of this specification. This contract can also be evaluated by spending a standard P2SH output, and does not require miner participation.
+This benchmark measures the worst-known standard transaction validation performance prior to deployment of this specification. This contract can be evaluated by spending a standard P2SH output, and does not require miner participation. (See [Exclusion of Additional Relay Policy Limits](#exclusion-of-additional-relay-policy-limits).)
 
 ```
-<0> <520> OP_NUM2BIN OP_HASH256 OP_DROP  // bytecode:   0x0002080280aa75
-<1> <520> OP_NUM2BIN OP_HASH256 OP_DROP  // bytecode:   0x5102080280aa75
+Unlock:
+<1>
+
+Lock:
+<0> <520> OP_NUM2BIN OP_HASH256  // bytecode:   0x0002080280aa
+<520> OP_NUM2BIN OP_HASH256      // bytecode:   0x02080280aa
 ...
-<65> <520> OP_NUM2BIN OP_HASH256 OP_DROP // bytecode: 0x014202080280aa75
+<520> OP_NUM2BIN OP_HASH256      // bytecode:   0x02080280aa
+OP_DROP
 ```
 
 #### Post-Deployment Benchmarks
@@ -239,11 +270,14 @@ To remove the operation limit without affecting the worst-case transaction valid
 This is the post-deployment equivalent of `Pre-Deployment Hashing Limit Benchmark`:
 
 ```
-<0> <10000> OP_NUM2BIN OP_HASH256 OP_DROP
-<1> <10000> OP_NUM2BIN OP_HASH256 OP_DROP
-<2> <10000> OP_NUM2BIN OP_HASH256 OP_DROP
-<3> <10000> OP_NUM2BIN OP_HASH256 OP_DROP
-<0> <2871> OP_NUM2BIN OP_HASH256 OP_DROP
+<0> <10000> OP_NUM2BIN OP_HASH256
+<10000> OP_NUM2BIN OP_HASH256
+<10000> OP_NUM2BIN OP_HASH256
+<10000> OP_NUM2BIN OP_HASH256
+<10000> OP_NUM2BIN OP_HASH256
+<10000> OP_NUM2BIN OP_HASH256
+<3703> OP_NUM2BIN OP_HASH256
+OP_DROP
 ```
 
 ##### Benchmark: Stack Memory Check at Maximum Depth
@@ -286,38 +320,38 @@ OP_DROP                                  // one `0x01` on stack
 
 This section documents design decisions made in this specification.
 
-### Hashing Limit of 660 Digest Iterations
+### Hashing Limit of 1000 Digest Iterations
 
-In this proposal, the precise value of `660` digest iterations has been selected to simplify review – at this value, the new limit [does not increase the worst-case computational cost](#hashing-limit) of validating maliciously-designed transactions.
+In this proposal, the precise value of `1000` digest iterations has been selected to simplify review – at this value, the new limit [does not increase the worst-case computational cost](#hashing-limit) of validating maliciously-designed transactions.
 
-This limit is likely also adequate for highly-complex public covenants: a 32-level `HASH160` merkle tree of `64` byte leaves requires only `70` digest iterations; contracts can easily inspect multiple parent transactions and large merkle proofs within the same evaluation without reaching this pre-existing limit. (Note: in practice, these contracts will be limited by other factors, particularly the 1,650-byte maximum unlocking bytecode length, A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE`.)
+This limit is likely also adequate for highly-complex public covenants: [verifying a leaf replacement within a merkle tree](https://bitcoincashresearch.org/t/p2sh-assurance-contract/720/15) requires `2` to `3` digest iterations per tree level; contracts could easily inspect many parent transactions and large merkle proofs within the same evaluation without reaching the `1000` digest limit. (Note: in practice, such contracts will remain limited by other factors, particularly the 1,650-byte maximum unlocking bytecode length, A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE`.)
 
 ### Hashing Limit by Digest Iterations
 
 One possible alternative to the proposed [Hashing Limit](#hashing-limit) design is to limit evaluations to a fixed count of "bytes hashed" (rather than digest iterations). While this seems simpler, it performs poorly in an adversarial environment: an attacker can choose message sizes to minimize bytes hashed while maximizing digest iterations required (e.g. 1-byte and 56-byte messages).
 
-For non-memoized VM implementations, a "bytes hashed" limit must be as low as 660 bytes to offer protection equivalent to the 660 digest iteration limit. However, by directly measuring and limiting digest iterations, non-malicious contracts can be allowed a limit of 42231 bytes hashed (efficiently) without increasing the worst-case validation requirements of the VM as it existed prior to this proposal.
+For non-memoized VM implementations, a "bytes hashed" limit must be as low as 1000 bytes to offer protection equivalent to the 1000 digest iteration limit. However, by directly measuring and limiting digest iterations, non-malicious contracts can be allowed a limit of 63,991 bytes hashed (efficiently) without increasing the worst-case validation requirements of the VM as it existed prior to this proposal.
 
 ### Exclusion of Additional Relay Policy Limits
 
-By allowing larger stack elements, this proposal increases the efficiency of a hashing-limited transaction (see [`Post-Deployment Hashing Limit Benchmark`](#post-deployment-hashing-limit-benchmark)), increasing the approximate validation time for 32MB worst-case blocks from ~0.12s to ~0.60s on 2018 consumer CPUs<sup>1</sup>. As such, hashing-limited transactions remain an ineffective DOS strategy – in practice they are equivalent to simple block-stuffing DOS attacks (for which the existing mitigation is transaction fees and large-enough blocks). No further relay policy limits are necessary in the context of this proposal.
+Note that worst-case block validation times have less impact on Bitcoin Cash than on other cryptocurrency networks: if most miners validate transactions as they are received (and most blocks clear the entire "mempool"), most standard transactions in a block must have been previously validated by other miners, and the new block can be validated quickly (without revalidating previously-seen transactions). Worst-case transaction validation times are only a concern for miners intentionally mining non-standard transactions – if most miners receive and begin building on a competing block before a miner's slow-to-validate block, the miner of the slow-to-validate block loses revenue – creating a natural disincentive for miners to produce such hard-to-validate blocks.
 
-> Note: worst-case block validation times are less important on Bitcoin Cash than on other cryptocurrencies: if most miners validate transactions as they are received (and most blocks clear the "mempool"), most standard transactions in a block must have been previously validated by other miners, and the new block can be validated quickly (without revalidating previously-seen transactions). Worst-case transaction validation times are only a concern for miners intentionally mining non-standard transactions – if a mining peer receives and validates a competing block before their slow-to-validate block, the miner of the slow-to-validate block loses revenue.
+By allowing larger stack elements, this proposal increases the efficiency of a hashing-limited transaction ([`Post-Deployment Hashing Limit Benchmark`](#post-deployment-hashing-limit-benchmark)), increasing the approximate validation time for 32MB worst-case blocks from ~0.19s to ~1.29s on 2018 consumer CPUs<sup>1</sup>. However, hashing-limited transactions remain an ineffective DOS strategy – in practice they are equivalent to simple block-stuffing DOS attacks (for which the existing mitigation is transaction fees and large-enough blocks). No further relay policy limits are necessary in the context of this proposal.
 
 <details>
- <summary>Calculations</summary>
+<summary>Calculations</summary>
 
-The maximum-efficiency transaction employing the [`Pre-Deployment Hashing Limit Benchmark`](#pre-deployment-hashing-limit-benchmark) has 176 inputs: version (4 bytes), input count (1 byte, `0xb2`), 176x{ outpoint (36 bytes), unlocking bytecode length (3 bytes, `0xfd0b02`), unlocking bytecode (523 bytes), sequence number (4 bytes)}, output count (1 byte, `0x01`), value (8 bytes), locking bytecode length (1 byte `0x01`), locking bytecode (1 byte, `OP_RETURN`), locktime (4 bytes). Total transaction size: `4 + 1 + 176 * (36 + 3 + 523 + 4) + 1 + 8 + 1 + 1 + 4 = 99,636 bytes`. Total digest iterations: `176 * 660 = 116,160 digest iterations`. `116160/99636 ~= 1.166`; **attack costs 1 byte per ~1.166 SHA-256 digest iterations**.
+The maximum-efficiency transaction employing the [`Pre-Deployment Hashing Limit Benchmark`](#pre-deployment-hashing-limit-benchmark) has 176 inputs: version (4 bytes), input count (1 byte, `0xb2`), 182 ✖️ { outpoint (36 bytes), unlocking bytecode length (3 bytes, `0xfdfa01`), unlocking bytecode (506 bytes), sequence number (4 bytes)}, output count (1 byte, `0x01`), value (8 bytes), locking bytecode length (1 byte `0x01`), locking bytecode (1 byte, `OP_RETURN`), locktime (4 bytes). Total transaction size: `4 + 1 + 182 * (36 + 3 + 523 + 4) + 1 + 8 + 1 + 1 + 4 = 99,636 bytes`. Total digest iterations: `182 * 1000 = 182,000 digest iterations`. `182000/99636 ~= 1.827`; **attack costs 1 byte per ~1.827 SHA-256 digest iterations**.
 
-The maximum-efficiency transaction employing the [`Post-Deployment Hashing Limit Benchmark`](#post-deployment-hashing-limit-benchmark) has 884 inputs: version (4 bytes), input count (3 bytes), 884x{ outpoint (36 bytes), unlocking bytecode length (1 byte, `0x46`), unlocking bytecode (72 bytes), sequence number (4 bytes) }, output count (1 byte, `0x01`), value (8 bytes), locking bytecode length (1 byte `0x01`), locking bytecode (1 byte, `OP_RETURN`), locktime (4 bytes). Total transaction size: `4 + 1 + 884 * (36 + 1 + 72 + 4) + 1 + 8 + 1 + 1 + 4 = 99,912 bytes`. Total digest iterations: `884 * 660 = 583,440 digest iterations`. `583440/99912 ~= 5.840`; **attack costs 1 byte per ~5.840 SHA-256 digest iterations**.
+The maximum-efficiency transaction employing the [`Post-Deployment Hashing Limit Benchmark`](#post-deployment-hashing-limit-benchmark) has 1249 inputs: version (4 bytes), input count (3 bytes), 884x{ outpoint (36 bytes), unlocking bytecode length (1 byte, `0x27`), unlocking bytecode (39 bytes), sequence number (4 bytes) }, output count (1 byte, `0x01`), value (8 bytes), locking bytecode length (1 byte `0x01`), locking bytecode (1 byte, `OP_RETURN`), locktime (4 bytes). Total transaction size: `4 + 1 + 1249 * (36 + 1 + 72 + 4) + 1 + 8 + 1 + 1 + 4 = 99,940 bytes`. Total digest iterations: `1249 * 1000 = 1,249,000 digest iterations`. `1249000/99912 ~= 12.501`; **attack costs 1 byte per ~12.501 SHA-256 digest iterations**.
 
-According to [AnandTech's CPU 2021 Benchmarks](https://archive.vn/PzlXO), most CPUs sold since 2015 perform SHA-256 (Linux, OpenSSL, multi-threaded) at over `2000 MB/s` for 8K message blocks: `2000 * 1000000 / 8000 * 126 = 31,500,000 digest iterations per second`. The `AMD Ryzen 5 2600` (a top-selling consumer CPU of 2018) performed at `19675 MB/s` for the same benchmark: `19675 * 1000000 / 8000 * 126 = 309,881,250 digest iterations per second`.
+According to [AnandTech's CPU 2021 Benchmarks](https://web.archive.org/web/20240202073032/https://www.anandtech.com/bench/CPU-2020/2793), most CPUs sold since 2015 perform SHA-256 (Linux, OpenSSL, multi-threaded) at over `2000 MB/s` for 8K message blocks: `2000 * 1000000 / 8000 * 126 iterations = 31,500,000 digest iterations per second`. The `AMD Ryzen 5 2600` (a top-selling consumer CPU of 2018) performed at `19675 MB/s` for the same benchmark: `19675 * 1000000 / 8000 * 126 iterations = 309,881,250 digest iterations per second`.
 
-At a Bitcoin Cash block size of 32MB, a full block of `Pre-Deployment Hashing Limit Benchmark` transactions will include 321 transactions requiring `37,287,360 digest iterations`; **approx. ~1.2s on 2015 CPUs, ~0.12s on 2018 CPUs**.
+At a Bitcoin Cash block size of 32MB, a full block of `Pre-Deployment Hashing Limit Benchmark` transactions will include 321 transactions requiring `58,422,000 digest iterations` (equivalent to hashing a single `~3,739 MB` message); **approx. ~1.85s on 2015 CPUs, ~0.19s on 2018 CPUs** (`58,422,000 iterations / 31,500,000 iterations per second = ~1.85s`, `58,422,000 iterations / 309,881,250 iterations per second = ~0.19s`).
 
-At a Bitcoin Cash block size of 32MB, a full block of `Post-Deployment Hashing Limit Benchmark` transactions will include 320 transactions requiring `186,700,800 digest iterations`; **approx. ~5.9s on 2015 CPUs, ~0.60s on 2018 CPUs**.
+At a Bitcoin Cash block size of 32MB, a full block of `Post-Deployment Hashing Limit Benchmark` transactions will include 320 transactions requiring `399,680,000 digest iterations` (equivalent to hashing a single `~25,580 MB` message); **approx. ~12.69s on 2015 CPUs, ~1.29s on 2018 CPUs** (`399,680,000 iterations / 31,500,000 iterations per second = ~12.69s`, `399,680,000 iterations / 309,881,250 iterations per second = ~1.29s`).
 
- </details>
+</details>
 
 ## Implementations
 
@@ -333,6 +367,17 @@ Please see the following reference implementations for additional examples and t
 
 - [`Raising the 520 byte push limit & 201 operation limit` – Feb 8, 2021 | bitcoincashresearch.org](https://bitcoincashresearch.org/t/raising-the-520-byte-push-limit-201-operation-limit/282)
 - [`CHIP: Targeted Virtual Machine Limits` – May 12, 2021 | bitcoincashresearch.org](https://bitcoincashresearch.org/t/chip-targeted-virtual-machine-limits/437)
+
+## Changelog
+
+This section summarizes the evolution of this document.
+
+- **Draft v2.0.0**
+  - Simplify stack memory limit calculation ([#6](https://github.com/bitjson/bch-vm-limits/pull/6))
+  - Correct hashing benchmarks, update hashing limit ([#6](https://github.com/bitjson/bch-vm-limits/pull/6))
+  - Propose for May 2025 Upgrade
+- **v1.0.0 – 2021-05-12** ([`5b24b0ec`](https://github.com/bitjson/bch-vm-limits/commit/ba2785b1f38bdecd8d72d5236c31c6846165c141))
+  - Initial publication
 
 ## Copyright
 
