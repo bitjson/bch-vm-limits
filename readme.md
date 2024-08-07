@@ -25,6 +25,24 @@ This proposal **intentionally avoids modifying other existing properties of the 
 - The cost and incentives around blockchain “data storage” are not measurably affected.
 - The worst-case transaction validation processing and memory requirements of the VM are not measurably affected.
 
+<details>
+<summary>Technical Overview of Changes to C++ Clients</summary>
+
+The following overview summarizes all changes proposed by this document to C++ implementations following the general structure of the original Satoshi client, e.g. [Bitcoin Cash Node](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/blob/185f2d64143e807352c0a18f92d8f3ac14bf6840/src/script/interpreter.cpp):
+
+1. `MAX_SCRIPT_ELEMENT_SIZE` increases from `520` to `10000`.
+2. `nOpCount` becomes `nOpCost` (used to measure stack-pushed bytes and operation costs)
+3. A new `static inline pushstack` is added to match `popstack`; `pushstack` increments `nOpCost` by the item length.
+4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (not conditional, so also executed for push operations).
+5. `case OP_AND/OP_OR/OP_XOR:` adds a `nOpCost += vch1.size();`
+6. `case OP_MUL/OP_DIV/OP_MOD:` adds a `nOpCost += a.size() * b.size();`
+7. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
+8. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` removed)
+9. `SigChecks` limits remain unchanged; similar density checks apply to `nHashDigestIterations` and `nOpCost`.
+10. Adds `if (vfExec.size() > 100) { return set_error(...`
+
+</details>
+
 ## Deployment
 
 Deployment of this specification is proposed for the May 2025 upgrade.
@@ -407,7 +425,7 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
   - [Selection of Hash Digest Iteration Cost](rationale.md#selection-of-hash-digest-iteration-cost)
   - [Inclusion of "Notice of Possible Future Expansion"](rationale.md#inclusion-of-notice-of-possible-future-expansion)
 
-### Tests & Benchmarks
+## Tests & Benchmarks
 
 This proposal includes a suite of functional tests and benchmarks to verify the performance of all operations within virtual machine implementations. See [Tests & Benchmarks](./tests-and-benchmarks.md) for details.
 
