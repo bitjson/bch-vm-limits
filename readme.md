@@ -6,8 +6,8 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-08-06
-        Version: 3.0.0
+        Latest Revision Date: 2024-08-12
+        Version: 3.0.1
 
 ## Summary
 
@@ -21,9 +21,15 @@ This proposal replaces several poorly-targeted virtual machine (VM) limits with 
 
 This proposal **intentionally avoids modifying other existing properties of the VM**:
 
-- The limits on signature operation count (A.K.A. `SigChecks`) density, maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes), maximum standard transaction byte-length (A.K.A. `MAX_STANDARD_TX_SIZE` – 100,000 bytes) and consensus-maximum transaction byte-length (A.K.A. `MAX_TX_SIZE` – 1,000,000 bytes) are not modified.
+- Other existing limits are not modified:
+  - Signature operation count (A.K.A. `SigChecks`) density,
+  - Maximum cumulative stack and altstack depth (A.K.A. `MAX_STACK_SIZE` – `1000`),
+  - Maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes),
+  - Consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes),
+  - Maximum standard transaction byte-length (A.K.A. `MAX_STANDARD_TX_SIZE` – 100,000 bytes), and
+  - Consensus-maximum transaction byte-length (A.K.A. `MAX_TX_SIZE` – 1,000,000 bytes).
 - The cost and incentives around blockchain “data storage” are not measurably affected.
-- The worst-case transaction validation processing and memory requirements of the VM are not measurably affected.
+- The worst-case processing and memory requirements of the VM are not measurably affected.
 
 <details>
 <summary>Technical Overview of Changes to C++ Clients</summary>
@@ -34,7 +40,7 @@ The following overview summarizes all changes proposed by this document to C++ i
 2. `nOpCount` becomes `nOpCost` (used to measure stack-pushed bytes and operation costs)
 3. A new `static inline pushstack` is added to match `popstack`; `pushstack` increments `nOpCost` by the item length.
 4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (not conditional, so also executed for push operations).
-5. `case OP_AND/OP_OR/OP_XOR:` adds a `nOpCost += vch1.size();`
+5. `case OP_AND/OP_OR/OP_XOR:` adds a `nOpCost += result.size();`
 6. `case OP_MUL/OP_DIV/OP_MOD:` adds a `nOpCost += a.size() * b.size();`
 7. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
 8. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` removed)
@@ -119,6 +125,8 @@ Currently, this limit impacts only the `OP_IF` and `OP_NOTIF` operations. For th
 A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), `OP_HASH256` (`0xaa`), `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), `OP_CHECKMULTISIGVERIFY` (`0xaf`), `OP_CHECKDATASIG` (`0xba`), and `OP_CHECKDATASIGVERIFY` (`0xbb`) to prevent excessive hashing function usage.
 
 Before a hashing function is performed, its expected cost – in terms of digest iterations – is added to a cumulative total for the transaction. If the cumulative digest iterations required to validate the spending transaction exceed the maximum allowed density, the operation produces an error. See [Rationale: Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations).
+
+Note that hash digest iterations are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
 #### Maximum Hashing Density
 
@@ -245,6 +253,8 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of `800` per spending transaction byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit).
 
 For each evaluated instruction (including push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
+
+Note that operation costs are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
 #### Measurement of Stack-Pushed Bytes
 
@@ -397,9 +407,9 @@ While unusual, it is possible to design pre-signed transactions, contract system
 
 <summary>Notes</summary>
 
-As always, the security of a contract is the responsibility of the entity locking funds in that contract; funds can always be locked in insecure contracts (e.g. `OP_DROP OP_1`). This notice is provided to warn contract authors and explicitly codify a network policy: the possible existence of poorly-designed contracts will not preclude future upgrades from further expanding VM limits.
+As always, the security of a contract is the responsibility of the entity locking funds in that contract; funds can always be locked in insecure contracts (e.g. "Anyone-Can-Spend addresses"). This notice is provided to warn contract authors and explicitly codify a network policy: the possible existence of poorly-designed contracts will not preclude future upgrades from further expanding VM limits.
 
-To ensure an otherwise-valid transaction will always fail when some limit is exceeded (in the rare case that such a behavior is desirable), that behavior must be either 1) explicitly validated or 2) introduced to the protocol or contract system in question prior to the activation of any future upgrade which expands the limit.
+To ensure an otherwise-valid transaction will always fail when some limit is exceeded (in the rare case that such a behavior is desirable), that behavior must be either 1) explicitly validated or 2) introduced to the protocol or contract system in question prior to the activation of any future upgrade which expands the requisite limit.
 
 A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https://gitlab.com/GeneralProtocols/research/chips/-/blob/master/CHIP-2021-02-Bigger-Script-Integers.md#notice-of-possible-future-expansion).
 
@@ -452,6 +462,7 @@ This section summarizes the evolution of this document.
 
 - **v3.0.1**
   - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
+  - Clarify more differences between existing and upgraded behavior
 - **v3.0.0** ([`4eba48ea`](https://github.com/bitjson/bch-vm-limits/commit/4eba48ea4648a5ad39f40ff11bfebbe3459fca83))
   - Revise limits to be density based ([#8](https://github.com/bitjson/bch-vm-limits/issues/8))
   - Limit bytes pushed to the stack ([#10](https://github.com/bitjson/bch-vm-limits/issues/10))
