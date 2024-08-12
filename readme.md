@@ -257,121 +257,119 @@ This specification codifies the pushing behavior of each operation based on [`v2
 
 #### Operation Cost by Operation
 
-> [!NOTE]
->
-> **This table is non-normative; it is provided for clarity, but it is not necessary for correct implementation of the proposal.** The provided `Operation Cost` formulas are derived from the proposal's technical specification. The [test vectors](#tests--benchmarks) are also designed to ensure that implementations correctly account for the cost of each operation.
+**This table is non-normative; it is provided for clarity, but it is not necessary for correct implementation of the proposal.** The provided `Operation Cost` formulas are derived from the proposal's technical specification. The [test vectors](#tests--benchmarks) are also designed to ensure that implementations correctly account for the cost of each operation.
 
-The full, standard operation cost for each operation is provided below, accounting for [Measurement of Stack-Pushed Bytes](#measurement-of-stack-pushed-bytes), [Arithmetic Operation Cost](#arithmetic-operation-cost), [Hash Digest Iteration Cost](#hash-digest-iteration-cost), and [Signature Checking Operation Cost](#signature-checking-operation-cost).
+The full, **standard operation cost** for each operation is provided below, accounting for [Measurement of Stack-Pushed Bytes](#measurement-of-stack-pushed-bytes), [Arithmetic Operation Cost](#arithmetic-operation-cost), [Hash Digest Iteration Cost](#hash-digest-iteration-cost), and [Signature Checking Operation Cost](#signature-checking-operation-cost). Note that standard and consensus ("nonstandard") operation costs differ only in the cost of hash digest iterations: `192` per iteration in standard validation, `64` per iteration in consensus validation.
 
-| Opcode(s)                  | Codepoint(s)   | Notes                                 | Operation Cost                                        |
-| -------------------------- | -------------- | ------------------------------------- | ----------------------------------------------------- |
-| `OP_0`                     | `0x00`         |                                       | `100`                                                 |
-| `OP_PUSHBYTES_N` (1-75)    | `0x01`-`0x4b`  |                                       | `100 + N`                                             |
-| `OP_PUSHDATA_N`            | `0x4c`-`0x4e`  |                                       | `100 + length`                                        |
-| `OP_1NEGATE`               | `0x4f`         |                                       | `100 + 1`                                             |
-| `OP_1`-`OP_16`             | `0x51`-`OP_16` |                                       | `100 + 1`                                             |
-| `OP_NOP`                   | `0x61`         |                                       | `100`                                                 |
-| `OP_IF`                    | `0x63`         |                                       | `100`                                                 |
-| `OP_NOTIF`                 | `0x64`         |                                       | `100`                                                 |
-| `OP_ELSE`                  | `0x67`         |                                       | `100`                                                 |
-| `OP_ENDIF`                 | `0x68`         |                                       | `100`                                                 |
-| `OP_VERIFY`                | `0x69`         |                                       | `100`                                                 |
-| `OP_RETURN`                | `0x6a`         |                                       | `100`                                                 |
-| `OP_TOALTSTACK`            | `0x6b`         |                                       | `100`                                                 |
-| `OP_FROMALTSTACK`          | `0x6c`         |                                       | `100 + length`                                        |
-| `OP_2DROP`                 | `0x6d`         |                                       | `100`                                                 |
-| `OP_2DUP`                  | `0x6e`         |                                       | `100 + 2 * length`                                    |
-| `OP_3DUP`                  | `0x6f`         |                                       | `100 + 3 * length`                                    |
-| `OP_2OVER`                 | `0x70`         | `a b c d -> a b c d a b`              | `100 + a.length + b.length`                           |
-| `OP_2ROT`                  | `0x71`         | `a b c d e f -> c d e f a b`          | `100 + a.length + b.length`                           |
-| `OP_2SWAP`                 | `0x72`         |                                       | `100`                                                 |
-| `OP_IFDUP`                 | `0x73`         |                                       | `100 + length` OR `100`                               |
-| `OP_DEPTH`                 | `0x74`         |                                       | `100 + length`                                        |
-| `OP_DROP`                  | `0x75`         |                                       | `100`                                                 |
-| `OP_DUP`                   | `0x76`         |                                       | `100 + length`                                        |
-| `OP_NIP`                   | `0x77`         |                                       | `100`                                                 |
-| `OP_OVER`                  | `0x78`         | `a b -> a b a`                        | `100 + a.length`                                      |
-| `OP_PICK`                  | `0x79`         |                                       | `100 + length`                                        |
-| `OP_ROLL`                  | `0x7a`         |                                       | `100 + length`                                        |
-| `OP_ROT`                   | `0x7b`         |                                       | `100`                                                 |
-| `OP_SWAP`                  | `0x7c`         |                                       | `100`                                                 |
-| `OP_TUCK`                  | `0x7d`         | `a b -> b a b`                        | `100 + b.length`                                      |
-| `OP_CAT`                   | `0x7e`         |                                       | `100`                                                 |
-| `OP_SPLIT`                 | `0x7f`         |                                       | `100`                                                 |
-| `OP_NUM2BIN`               | `0x80`         |                                       | `100 + length`                                        |
-| `OP_BIN2NUM`               | `0x81`         |                                       | `100 + length`                                        |
-| `OP_SIZE`                  | `0x82`         |                                       | `100 + length`                                        |
-| `OP_AND`                   | `0x84`         |                                       | `100 + length`                                        |
-| `OP_OR`                    | `0x85`         |                                       | `100 + length`                                        |
-| `OP_XOR`                   | `0x86`         |                                       | `100 + length`                                        |
-| `OP_EQUAL`                 | `0x87`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_EQUALVERIFY`           | `0x88`         |                                       | `100`                                                 |
-| `OP_1ADD`                  | `0x8b`         |                                       | `100 + length`                                        |
-| `OP_1SUB`                  | `0x8c`         |                                       | `100 + length`                                        |
-| `OP_NEGATE`                | `0x8f`         |                                       | `100 + length`                                        |
-| `OP_ABS`                   | `0x90`         |                                       | `100 + length`                                        |
-| `OP_NOT`                   | `0x91`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_0NOTEQUAL`             | `0x92`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_ADD`                   | `0x93`         |                                       | `100 + length`                                        |
-| `OP_SUB`                   | `0x94`         |                                       | `100 + length`                                        |
-| `OP_MUL`                   | `0x95`         | `a b -> c`                            | `100 + (a.length * b.length) + c.length`              |
-| `OP_DIV`                   | `0x96`         | `a b -> c`                            | `100 + (a.length * b.length) + c.length`              |
-| `OP_MOD`                   | `0x97`         | `a b -> c`                            | `100 + (a.length * b.length) + c.length`              |
-| `OP_BOOLAND`               | `0x9a`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_BOOLOR`                | `0x9b`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_NUMEQUAL`              | `0x9c`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_NUMEQUALVERIFY`        | `0x9d`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_NUMNOTEQUAL`           | `0x9e`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_LESSTHAN`              | `0x9f`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_GREATERTHAN`           | `0xa0`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_LESSTHANOREQUAL`       | `0xa1`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_GREATERTHANOREQUAL`    | `0xa2`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_MIN`                   | `0xa3`         |                                       | `100 + length`                                        |
-| `OP_MAX`                   | `0xa4`         |                                       | `100 + length`                                        |
-| `OP_WITHIN`                | `0xa5`         |                                       | `100` OR `100 + 1`                                    |
-| `OP_RIPEMD160`             | `0xa6`         | Standard: `192`; Consensus: `64`      | `100 + (iterations * 192)`                            |
-| `OP_SHA1`                  | `0xa7`         | "                                     | `100 + (iterations * 192)`                            |
-| `OP_SHA256`                | `0xa8`         | "                                     | `100 + (iterations * 192)`                            |
-| `OP_HASH160`               | `0xa9`         | "                                     | `100 + (iterations * 192) + 1`                        |
-| `OP_HASH256`               | `0xaa`         | "                                     | `100 + (iterations * 192) + 1`                        |
-| `OP_CODESEPARATOR`         | `0xab`         |                                       | `100`                                                 |
-| `OP_CHECKSIG`              | `0xac`         | (Null signature check is `100`)       | `100` OR `100 + 26000 + (iterations * 192) + 1`       |
-| `OP_CHECKSIGVERIFY`        | `0xad`         | "                                     | `100` OR `100 + 26000 + (iterations * 192)`           |
-| `OP_CHECKMULTISIG`         | `0xae`         | M-of-N; K=M for Schnorr, N for legacy | `100` OR `100 + (26000 * K) + (iterations * 192) + 1` |
-| `OP_CHECKMULTISIGVERIFY`   | `0xaf`         | "                                     | `100` OR `100 + (26000 * K) + (iterations * 192)`     |
-| `OP_NOP1`                  | `0xb0`         |                                       | `100`                                                 |
-| `OP_CHECKLOCKTIMEVERIFY`   | `0xb1`         |                                       | `100`                                                 |
-| `OP_CHECKSEQUENCEVERIFY`   | `0xb2`         |                                       | `100`                                                 |
-| `OP_NOP4`                  | `0xb3`         |                                       | `100`                                                 |
-| `OP_NOP5`                  | `0xb4`         |                                       | `100`                                                 |
-| `OP_NOP6`                  | `0xb5`         |                                       | `100`                                                 |
-| `OP_NOP7`                  | `0xb6`         |                                       | `100`                                                 |
-| `OP_NOP8`                  | `0xb7`         |                                       | `100`                                                 |
-| `OP_NOP9`                  | `0xb8`         |                                       | `100`                                                 |
-| `OP_NOP10`                 | `0xb9`         |                                       | `100`                                                 |
-| `OP_CHECKDATASIG`          | `0xba`         | (Cost `100` for null signature check) | `100` OR `100 + 26000 + (iterations * 192) + 1`       |
-| `OP_CHECKDATASIGVERIFY`    | `0xbb`         | "                                     | `100` OR `100 + 26000 + (iterations * 192)`           |
-| `OP_REVERSEBYTES`          | `0xbc`         |                                       | `100 + length`                                        |
-| `OP_INPUTINDEX`            | `0xc0`         |                                       | `100 + length`                                        |
-| `OP_ACTIVEBYTECODE`        | `0xc1`         |                                       | `100 + length`                                        |
-| `OP_TXVERSION`             | `0xc2`         |                                       | `100 + length`                                        |
-| `OP_TXINPUTCOUNT`          | `0xc3`         |                                       | `100 + length`                                        |
-| `OP_TXOUTPUTCOUNT`         | `0xc4`         |                                       | `100 + length`                                        |
-| `OP_TXLOCKTIME`            | `0xc5`         |                                       | `100 + length`                                        |
-| `OP_UTXOVALUE`             | `0xc6`         |                                       | `100 + length`                                        |
-| `OP_UTXOBYTECODE`          | `0xc7`         |                                       | `100 + length`                                        |
-| `OP_OUTPOINTTXHASH`        | `0xc8`         |                                       | `100 + length`                                        |
-| `OP_OUTPOINTINDEX`         | `0xc9`         |                                       | `100 + length`                                        |
-| `OP_INPUTBYTECODE`         | `0xca`         |                                       | `100 + length`                                        |
-| `OP_INPUTSEQUENCENUMBER`   | `0xcb`         |                                       | `100 + length`                                        |
-| `OP_OUTPUTVALUE`           | `0xcc`         |                                       | `100 + length`                                        |
-| `OP_OUTPUTBYTECODE`        | `0xcd`         |                                       | `100 + length`                                        |
-| `OP_UTXOTOKENCATEGORY`     | `0xce`         |                                       | `100 + length`                                        |
-| `OP_UTXOTOKENCOMMITMENT`   | `0xcf`         |                                       | `100 + length`                                        |
-| `OP_UTXOTOKENAMOUNT`       | `0xd0`         |                                       | `100 + length`                                        |
-| `OP_OUTPUTTOKENCATEGORY`   | `0xd1`         |                                       | `100 + length`                                        |
-| `OP_OUTPUTTOKENCOMMITMENT` | `0xd2`         |                                       | `100 + length`                                        |
-| `OP_OUTPUTTOKENAMOUNT`     | `0xd3`         |                                       | `100 + length`                                        |
+| Opcode(s)                  | Codepoint(s)   | Notes                                       | Operation Cost                                              |
+| -------------------------- | -------------- | ------------------------------------------- | ----------------------------------------------------------- |
+| `OP_0`                     | `0x00`         |                                             | `100`                                                       |
+| `OP_PUSHBYTES_N` (1-75)    | `0x01`-`0x4b`  | `OP_PUSHBYTES_2` is `102`, etc.             | `100 + N`                                                   |
+| `OP_PUSHDATA_N`            | `0x4c`-`0x4e`  | `OP_PUSHDATA_2` of `521` is `621`, etc.     | `100 + length`                                              |
+| `OP_1NEGATE`               | `0x4f`         |                                             | `100 + 1`                                                   |
+| `OP_1`-`OP_16`             | `0x51`-`OP_16` |                                             | `100 + 1`                                                   |
+| `OP_NOP`                   | `0x61`         |                                             | `100`                                                       |
+| `OP_IF`                    | `0x63`         |                                             | `100`                                                       |
+| `OP_NOTIF`                 | `0x64`         |                                             | `100`                                                       |
+| `OP_ELSE`                  | `0x67`         |                                             | `100`                                                       |
+| `OP_ENDIF`                 | `0x68`         |                                             | `100`                                                       |
+| `OP_VERIFY`                | `0x69`         |                                             | `100`                                                       |
+| `OP_RETURN`                | `0x6a`         |                                             | `100`                                                       |
+| `OP_TOALTSTACK`            | `0x6b`         |                                             | `100`                                                       |
+| `OP_FROMALTSTACK`          | `0x6c`         | stack: ` `; alt: `a` → stack: `a`; alt: ` ` | `100 + a.length`                                            |
+| `OP_2DROP`                 | `0x6d`         |                                             | `100`                                                       |
+| `OP_2DUP`                  | `0x6e`         | `a b` → `a b a b`                           | `100 + a.length + b.length`                                 |
+| `OP_3DUP`                  | `0x6f`         | `a b c` → `a b c a b c`                     | `100 + a.length + b.length + c.length`                      |
+| `OP_2OVER`                 | `0x70`         | `a b c d` → `a b c d a b`                   | `100 + a.length + b.length`                                 |
+| `OP_2ROT`                  | `0x71`         | `a b c d e f` → `c d e f a b`               | `100 + a.length + b.length`                                 |
+| `OP_2SWAP`                 | `0x72`         |                                             | `100`                                                       |
+| `OP_IFDUP`                 | `0x73`         | `a` → `a a` OR `a` → `a`                    | `100 + length` OR `100`                                     |
+| `OP_DEPTH`                 | `0x74`         | `a b c ...` → `a b c ... d`                 | `100 + d.length`                                            |
+| `OP_DROP`                  | `0x75`         |                                             | `100`                                                       |
+| `OP_DUP`                   | `0x76`         | `a` → `a a`                                 | `100 + a.length`                                            |
+| `OP_NIP`                   | `0x77`         |                                             | `100`                                                       |
+| `OP_OVER`                  | `0x78`         | `a b` → `a b a`                             | `100 + a.length`                                            |
+| `OP_PICK`                  | `0x79`         | e.g. `a b c 2` → `a b c a`                  | `100 + a.length`                                            |
+| `OP_ROLL`                  | `0x7a`         | e.g. `a b c 2` → `b c a`                    | `100 + a.length`                                            |
+| `OP_ROT`                   | `0x7b`         |                                             | `100`                                                       |
+| `OP_SWAP`                  | `0x7c`         |                                             | `100`                                                       |
+| `OP_TUCK`                  | `0x7d`         | `a b` → `b a b`                             | `100 + b.length`                                            |
+| `OP_CAT`                   | `0x7e`         | `a b` → `ab`                                | `100 + a.length + b.length`                                 |
+| `OP_SPLIT`                 | `0x7f`         | `ab n` → `a b`                              | `100 + a.length + b.length`                                 |
+| `OP_NUM2BIN`               | `0x80`         | `a n` → `b`                                 | `100 + b.length`                                            |
+| `OP_BIN2NUM`               | `0x81`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_SIZE`                  | `0x82`         | `a` → `a b`                                 | `100 + b.length`                                            |
+| `OP_AND`                   | `0x84`         | `a b` → `c`                                 | `100 + c.length`                                            |
+| `OP_OR`                    | `0x85`         | `a b` → `c`                                 | `100 + c.length`                                            |
+| `OP_XOR`                   | `0x86`         | `a b` → `c`                                 | `100 + c.length`                                            |
+| `OP_EQUAL`                 | `0x87`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_EQUALVERIFY`           | `0x88`         |                                             | `100`                                                       |
+| `OP_1ADD`                  | `0x8b`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_1SUB`                  | `0x8c`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_NEGATE`                | `0x8f`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_ABS`                   | `0x90`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_NOT`                   | `0x91`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_0NOTEQUAL`             | `0x92`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_ADD`                   | `0x93`         | `a b` → `c`                                 | `100 + c.length`                                            |
+| `OP_SUB`                   | `0x94`         | `a b` → `c`                                 | `100 + c.length`                                            |
+| `OP_MUL`                   | `0x95`         | `a b` → `c`                                 | `100 + (a.length * b.length) + c.length`                    |
+| `OP_DIV`                   | `0x96`         | `a b` → `c`                                 | `100 + (a.length * b.length) + c.length`                    |
+| `OP_MOD`                   | `0x97`         | `a b` → `c`                                 | `100 + (a.length * b.length) + c.length`                    |
+| `OP_BOOLAND`               | `0x9a`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_BOOLOR`                | `0x9b`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_NUMEQUAL`              | `0x9c`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_NUMEQUALVERIFY`        | `0x9d`         |                                             | `100`                                                       |
+| `OP_NUMNOTEQUAL`           | `0x9e`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_LESSTHAN`              | `0x9f`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_GREATERTHAN`           | `0xa0`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_LESSTHANOREQUAL`       | `0xa1`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_GREATERTHANOREQUAL`    | `0xa2`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_MIN`                   | `0xa3`         | `a b` → `c` (min of `a` OR `b`)             | `100 + c.length`                                            |
+| `OP_MAX`                   | `0xa4`         | `a b` → `c` (max of `a` OR `b`)             | `100 + c.length`                                            |
+| `OP_WITHIN`                | `0xa5`         |                                             | `100` (`0`) OR `100 + 1` (`1`)                              |
+| `OP_RIPEMD160`             | `0xa6`         | `a` → `b`                                   | `100 + (iterations * 192) + b.length`                       |
+| `OP_SHA1`                  | `0xa7`         | `a` → `b`                                   | `100 + (iterations * 192) + b.length`                       |
+| `OP_SHA256`                | `0xa8`         | `a` → `b`                                   | `100 + (iterations * 192) + b.length`                       |
+| `OP_HASH160`               | `0xa9`         | `a` → `b`                                   | `100 + ((iterations + 1) * 192) + b.length`                 |
+| `OP_HASH256`               | `0xaa`         | `a` → `b`                                   | `100 + ((iterations + 1) * 192) + b.length`                 |
+| `OP_CODESEPARATOR`         | `0xab`         |                                             | `100`                                                       |
+| `OP_CHECKSIG`              | `0xac`         | (Null signature check is `100`)             | `100` (`0`) OR `100 + 26000 + (iterations * 192) + 1`       |
+| `OP_CHECKSIGVERIFY`        | `0xad`         |                                             | `100 + 26000 + (iterations * 192)`                          |
+| `OP_CHECKMULTISIG`         | `0xae`         | M-of-N; K=M for Schnorr, N for legacy       | `100` (`0`) OR `100 + (26000 * K) + (iterations * 192) + 1` |
+| `OP_CHECKMULTISIGVERIFY`   | `0xaf`         | M-of-N; K=M for Schnorr, N for legacy       | `100 + (26000 * K) + (iterations * 192)`                    |
+| `OP_NOP1`                  | `0xb0`         |                                             | `100`                                                       |
+| `OP_CHECKLOCKTIMEVERIFY`   | `0xb1`         |                                             | `100`                                                       |
+| `OP_CHECKSEQUENCEVERIFY`   | `0xb2`         |                                             | `100`                                                       |
+| `OP_NOP4`                  | `0xb3`         |                                             | `100`                                                       |
+| `OP_NOP5`                  | `0xb4`         |                                             | `100`                                                       |
+| `OP_NOP6`                  | `0xb5`         |                                             | `100`                                                       |
+| `OP_NOP7`                  | `0xb6`         |                                             | `100`                                                       |
+| `OP_NOP8`                  | `0xb7`         |                                             | `100`                                                       |
+| `OP_NOP9`                  | `0xb8`         |                                             | `100`                                                       |
+| `OP_NOP10`                 | `0xb9`         |                                             | `100`                                                       |
+| `OP_CHECKDATASIG`          | `0xba`         | (Null signature check is `100`)             | `100` (`0`) OR `100 + 26000 + (iterations * 192) + 1`       |
+| `OP_CHECKDATASIGVERIFY`    | `0xbb`         |                                             | `100 + 26000 + (iterations * 192)`                          |
+| `OP_REVERSEBYTES`          | `0xbc`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_INPUTINDEX`            | `0xc0`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_ACTIVEBYTECODE`        | `0xc1`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_TXVERSION`             | `0xc2`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_TXINPUTCOUNT`          | `0xc3`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_TXOUTPUTCOUNT`         | `0xc4`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_TXLOCKTIME`            | `0xc5`         | ` ` → `a`                                   | `100 + a.length`                                            |
+| `OP_UTXOVALUE`             | `0xc6`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_UTXOBYTECODE`          | `0xc7`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPOINTTXHASH`        | `0xc8`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPOINTINDEX`         | `0xc9`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_INPUTBYTECODE`         | `0xca`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_INPUTSEQUENCENUMBER`   | `0xcb`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPUTVALUE`           | `0xcc`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPUTBYTECODE`        | `0xcd`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_UTXOTOKENCATEGORY`     | `0xce`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_UTXOTOKENCOMMITMENT`   | `0xcf`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_UTXOTOKENAMOUNT`       | `0xd0`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPUTTOKENCATEGORY`   | `0xd1`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPUTTOKENCOMMITMENT` | `0xd2`         | `a` → `b`                                   | `100 + b.length`                                            |
+| `OP_OUTPUTTOKENAMOUNT`     | `0xd3`         | `a` → `b`                                   | `100 + b.length`                                            |
 
 </details>
 
@@ -434,7 +432,7 @@ This proposal includes a suite of functional tests and benchmarks to verify the 
 Please see the following reference implementations for additional examples and test vectors:
 
 - C++:
-  - [Bitcoin Cash Node (BCHN)](https://bitcoincashnode.org/) – A professional, miner-friendly node that solves practical problems for Bitcoin Cash. [Merge Request !1827](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/merge_requests/1827).
+  - [Bitcoin Cash Node (BCHN)](https://bitcoincashnode.org/) – A professional, miner-friendly node that solves practical problems for Bitcoin Cash. [Merge Request !1874](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/merge_requests/1874).
 - JavaScript/TypeScript
   - [Libauth](https://github.com/bitauth/libauth) – An ultra-lightweight, zero-dependency JavaScript library for Bitcoin Cash. [Pull Request #139](https://github.com/bitauth/libauth/pull/139).
   - [Bitauth IDE](https://github.com/bitauth/bitauth-ide) – An online IDE for bitcoin (cash) contracts. [Pull Request #101](https://github.com/bitauth/bitauth-ide/pull/101).
@@ -452,7 +450,9 @@ Please see the following reference implementations for additional examples and t
 
 This section summarizes the evolution of this document.
 
-- **v3.0.0**
+- **v3.0.1**
+  - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
+- **v3.0.0** ([`4eba48ea`](https://github.com/bitjson/bch-vm-limits/commit/4eba48ea4648a5ad39f40ff11bfebbe3459fca83))
   - Revise limits to be density based ([#8](https://github.com/bitjson/bch-vm-limits/issues/8))
   - Limit bytes pushed to the stack ([#10](https://github.com/bitjson/bch-vm-limits/issues/10))
   - Limit depth of control stack ([#11](https://github.com/bitjson/bch-vm-limits/issues/11))
