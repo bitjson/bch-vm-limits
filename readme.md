@@ -6,7 +6,7 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-08-12
+        Latest Revision Date: 2024-08-13
         Version: 3.0.1
 
 ## Summary
@@ -305,8 +305,8 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_DUP`                   | `0x76`         | `a` → `a a`                                                               | `100 + a.length`                                                    |
 | `OP_NIP`                   | `0x77`         |                                                                           | `100`                                                               |
 | `OP_OVER`                  | `0x78`         | `a b` → `a b a`                                                           | `100 + a.length`                                                    |
-| `OP_PICK`                  | `0x79`         | E.g. `a b c 2` → `a b c a`                                                | `100 + a.length`                                                    |
-| `OP_ROLL`                  | `0x7a`         | E.g. `a b c 2` → `b c a`                                                  | `100 + a.length`                                                    |
+| `OP_PICK`                  | `0x79`         | E.g. `a b c d 3` → `a b c d a` (N=3)                                      | `100 + a.length`                                                    |
+| `OP_ROLL`                  | `0x7a`         | E.g. `a b c d 3` → `b c d a` (N=3)                                        | `100 + a.length + N` (where N is depth)                             |
 | `OP_ROT`                   | `0x7b`         |                                                                           | `100`                                                               |
 | `OP_SWAP`                  | `0x7c`         |                                                                           | `100`                                                               |
 | `OP_TUCK`                  | `0x7d`         | `a b` → `b a b`                                                           | `100 + b.length`                                                    |
