@@ -471,7 +471,7 @@ Please see the following reference implementations for additional examples and t
 
 This section summarizes the evolution of this document.
 
-- **v3.0.1**
+- **v3.0.1** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))
   - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
   - Clarify more differences between existing and upgraded behavior
 - **v3.0.0** ([`4eba48ea`](https://github.com/bitjson/bch-vm-limits/commit/4eba48ea4648a5ad39f40ff11bfebbe3459fca83))
