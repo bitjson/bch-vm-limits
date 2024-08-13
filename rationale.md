@@ -105,7 +105,7 @@ This proposal sets the operation cost density at `800` per spending transaction 
 
 ### Selection of Base Instruction Cost
 
-To retain a conservative limit on contract operation density, this proposal sets a base operation cost of `100` per evaluated instruction.
+To retain a conservative limit on contract operation density, this proposal sets a base operation cost of `100` per evaluated instruction, including unexecuted and push operations.
 
 Given the [operation cost density limit of `800`](#operation-cost-limit), a base instruction cost of `100` ensures that the maximum operation density within spending transactions (8 per byte) remains within an order of magnitude of the current effective limit (approximately 1 per byte) resulting from the 201 operation limit.
 

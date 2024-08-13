@@ -39,7 +39,7 @@ The following overview summarizes all changes proposed by this document to C++ i
 1. `MAX_SCRIPT_ELEMENT_SIZE` increases from `520` to `10000`.
 2. `nOpCount` becomes `nOpCost` (used to measure stack-pushed bytes and operation costs)
 3. A new `static inline pushstack` is added to match `popstack`; `pushstack` increments `nOpCost` by the item length.
-4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (not conditional, so also executed for push operations).
+4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (no conditional, so also added for unexecuted and push operations).
 5. `case OP_AND/OP_OR/OP_XOR:` adds a `nOpCost += result.size();`
 6. `case OP_MUL/OP_DIV/OP_MOD:` adds a `nOpCost += a.size() * b.size();`
 7. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
@@ -252,7 +252,7 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 
 An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of `800` per spending transaction byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit).
 
-For each evaluated instruction (including push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
+For each evaluated instruction (including unexecuted and push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
 
 Note that operation costs are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
@@ -269,7 +269,7 @@ This specification codifies the pushing behavior of each operation based on [`v2
 
 **This table is non-normative; it is provided for clarity, but it is not necessary for correct implementation of the proposal.** The provided `Operation Cost` formulas are derived from the proposal's technical specification. The [test vectors](#tests--benchmarks) are also designed to ensure that implementations correctly account for the cost of each operation.
 
-The full, **standard operation cost**<sup>1</sup> for each operation is provided below, accounting for [Measurement of Stack-Pushed Bytes](#measurement-of-stack-pushed-bytes), [Arithmetic Operation Cost](#arithmetic-operation-cost), [Hash Digest Iteration Cost](#hash-digest-iteration-cost), and [Signature Checking Operation Cost](#signature-checking-operation-cost).
+The full, **standard operation cost**<sup>1</sup> for each executed operation<sup>2</sup> is provided below, accounting for [Measurement of Stack-Pushed Bytes](#measurement-of-stack-pushed-bytes), [Arithmetic Operation Cost](#arithmetic-operation-cost), [Hash Digest Iteration Cost](#hash-digest-iteration-cost), and [Signature Checking Operation Cost](#signature-checking-operation-cost).
 
 | Opcode(s)                  | Codepoint(s)   | Notes                                                                     | Operation Cost                                                      |
 | -------------------------- | -------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -383,7 +383,8 @@ The full, **standard operation cost**<sup>1</sup> for each operation is provided
 
 #### Notes
 
-1. Note that standard and consensus ("nonstandard") operation costs differ only in the cost of hash digest iterations: `192` per iteration in standard validation, `64` per iteration in consensus validation.
+1. Standard and consensus ("nonstandard") operation costs differ only in the cost of hash digest iterations: `192` per iteration in standard validation, `64` per iteration in consensus validation.
+2. All unexecuted operations cost the [Base Instruction Cost](rationale.md#selection-of-base-instruction-cost) of `100` per evaluation.
 
 </details>
 
