@@ -162,23 +162,27 @@ The hashing limit caps the number of iterations required by all hashing function
 Given a message length, digest iterations may be calculated with the following C function:
 
 ```c
-int digest_iterations (int message_length) {
-  return 1 + ((message_length + 8) / 64);
+int digest_iterations(int message_length, bool is_double) {
+  return 1 + ((message_length + 8) / 64) + (is_double ? 1 : 0);
 }
 ```
+
+Note that the double-hashing operations (`OP_HASH160` and `OP_HASH256`) and all [Transaction Signature Checking Operations](#transaction-signature-checking-operations) (but not the [Data Signature Checking Operations](#data-signature-checking-operations)) perform a final hash digest iteration on the result produced by the initial round of hashing; for these operations, the `is_double` parameter must be set to `true` to increment the final count by one.
 
 <details>
 <summary>Calculate Digest Iterations in JavaScript</summary>
 
 ```js
-const digestIterations = (messageLength) =>
-  1 + Math.floor((messageLength + 8) / 64);
+const digestIterations = (messageLength, isDouble) =>
+  1 + Math.floor((messageLength + 8) / 64) + (isDouble ? 1 : 0);
 ```
 
 </details>
 
 <details>
 <summary>Digest Iteration Count Test Vectors</summary>
+
+These test vectors reflect the required hash digest iterations for a variety of message sizes, **without accounting for double hashing**. For double-hashed messages, the `Digest Iterations` shown must be further incremented by one.
 
 | Message Length (Bytes) | Digest Iterations |
 | ---------------------- | ----------------- |
@@ -234,6 +238,8 @@ Note that hash digest iterations required to produce components of the signing s
 #### Data Signature Checking Operations
 
 The `OP_CHECKDATASIG` (`0xba`) and `OP_CHECKDATASIGVERIFY` (`0xbb`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction's cumulative count. If the new total exceeds the limit, validation fails.
+
+In counting digest iterations, note that these operations perform only a single round of hashing.
 
 ### Replacement of Operation Limit
 
