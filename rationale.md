@@ -2,6 +2,29 @@
 
 This section documents design decisions made in this specification.
 
+### Density-based Operational Cost Limit
+
+The objective of this upgrade is to allow smart contract transactions to do more, and without any negative impact to network scalability.
+With the proposed approach of limiting operational cost density, we can guarantee that processing cost of a block packed with smart contract transactions can't exceeed the cost of a block packed full of typical payment transactions (pay-to-public-key-hash transactions, abbreviated P2PKH).
+Those kinds of transactions make more than 99% of Bitcoin Cash network traffic and are thus a natural baseline for scalability considerations.
+
+Trade-off of limiting density (rather than total cost) is that transaction size may be intentionally inflated by users in order to "buy" more total operational budget for some input's script, in effect turning transaction's bytes into a form of "gas".
+Transactions having such filler bytes still wouldn't negatively impact scalability, although they would appear wasteful.
+These filler bytes would have to pay transaction fees just like any other transaction and we don't expect users to make these kinds of transactions unless they have economically good reasons, so this is not seen as a problem.
+With the density-based approach, we can have maximum flexibility and functionality so this is seen as an acceptable trade-off.
+
+What are the alternatives?
+
+If we simply limited total transaction's operation cost, we'd still achieve the objective of not negatively impacting network scalability, but at the expense of flexibility and functionality: a big transaction would have as much operational cost budget as a small transaction, meaning it could not do as much with its own bytes, even when the bytes are not intentionally filler bytes.
+To be useful, bigger transactions normally have to operate on more UTXOs or data, so they need to execute proportionally more operations than smaller transactions.
+If we limited total operations, contract authors would then have to work around the limitation by creating chains of transactions to carry out the operations rather than packing all operations in one transaction - and that would result in more overheads and being relatively more expensive for the network to process while also complicating contract design for application developers.
+This is pretty much the status quo, which we are hoping to improve on.
+
+Another alternative is to introduce a kind of gas system, where transactions could declare how much processing budget they want to buy, e.g. declare some additional "virtual" bytes without actually having to encode them.
+Then, transaction fees could be negotiated based on raw + virtual bytes, rather than just raw bytes.
+This system would introduce additional complexity and for not much benefit other than saving some network bandwidth for those exotic cases.
+Savings in bandwidth could be alternatively achieved on another layer: by compressing TX data, especially because filler bytes an be highly compressible (e.g. data push of 1000 0-bytes).
+
 ### Retention of Control Stack Limit
 
 This proposal avoids modifying the existing practical limit on control stack depth by introducing a specific `Control Stack Limit` in place of the current effective limit<sup>1</sup>.

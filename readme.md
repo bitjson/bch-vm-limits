@@ -15,8 +15,8 @@ This proposal replaces several poorly-targeted virtual machine (VM) limits with 
 
 - The 201 operation limit is removed.
 - The 520-byte stack element length limit is raised to 10,000 bytes, a constant equal to the consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE`) prior to this proposal.
-- A new operation cost limit is introduced, limiting contracts to approximately 700 bytes pushed to the stack per spending transaction byte, with increased costs for hashing, signature checking, and expensive arithmetic operations; constants are derived from the effective limit(s) prior to this proposal.
-- A new hashing limit is introduced, limiting contracts to 3.5 hash digest iterations per spending transaction byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to 0.5 hash digest iterations per spending transaction byte, the maximum-known, theoretically-useful hashing density.
+- A new density-based operation cost limit is introduced limiting contracts to approximately 700 bytes pushed to the stack per spending transaction byte, with increased costs for hashing, signature checking, and expensive arithmetic operations; constants are derived from the effective limit(s) prior to this proposal.
+- A new density-based hashing limit is introduced, limiting contracts to 3.5 hash digest iterations per spending transaction byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to 0.5 hash digest iterations per spending transaction byte, the maximum-known, theoretically-useful hashing density.
 - A new control stack limit is introduced, limiting control flow operations (`OP_IF` and `OP_NOTIF`) to a depth of 100, the effective limit prior to this proposal.
 
 This proposal **intentionally avoids modifying other existing properties of the VM**:
@@ -125,6 +125,9 @@ Currently, this limit impacts only the `OP_IF` and `OP_NOTIF` operations. For th
 A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), `OP_HASH256` (`0xaa`), `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), `OP_CHECKMULTISIGVERIFY` (`0xaf`), `OP_CHECKDATASIG` (`0xba`), and `OP_CHECKDATASIGVERIFY` (`0xbb`) to prevent excessive hashing function usage.
 
 Before a hashing function is performed, its expected cost – in terms of digest iterations – is added to a cumulative total for the transaction. If the cumulative digest iterations required to validate the spending transaction exceed the maximum allowed density, the operation produces an error. See [Rationale: Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations).
+
+Because the limit is on density, this means that transaction's total operation cost budget is effectively bought by transaction's size.
+This is by design, please see [Rationale: Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit).
 
 Note that hash digest iterations are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
@@ -257,6 +260,9 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 ### Operation Cost Limit
 
 An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of `800` per spending transaction byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit).
+
+Because the limit is on density, this means that transaction's total operation cost budget is effectively bought by transaction's size.
+This is by design, please see [Rationale: Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit).
 
 For each evaluated instruction (including unexecuted and push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
 
