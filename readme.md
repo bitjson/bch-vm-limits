@@ -42,7 +42,7 @@ The following overview summarizes all changes proposed by this document to C++ i
 4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (no conditional, so also added for unexecuted and push operations).
 5. `case OP_ROLL:` adds `nOpCost += depth;`
 6. `case OP_AND/OP_OR/OP_XOR:` adds `nOpCost += result.size();`
-7. `case OP_1ADD...OP_0NOTEQUAL:` adds `nOpCost += bn.size();`, `case OP_ADD...OP_MAX:` adds `nOpCost += bn1.size() + bn2.size();`, `case OP_WITHIN:` adds `nOpCost += bn1.size() + bn2.size() + bn3.size().;`
+7. `case OP_1ADD...OP_0NOTEQUAL:` adds `nOpCost += bn.size();`, `case OP_ADD...OP_MAX:` adds `nOpCost += bn1.size() + bn2.size();`, `case OP_WITHIN:` adds `nOpCost += bn1.size() + bn2.size() + bn3.size();`
 8. `case OP_MUL/OP_DIV/OP_MOD:` adds `nOpCost += a.size() * b.size();`
 9. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
 10. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` is removed)
@@ -68,8 +68,8 @@ Bitcoin Cash contracts are strictly limited to prevent maliciously-designed tran
 Collectively, existing limits:
 
 - Cap the maximum density of both hashing and elliptic curve math required for validation of signature checking operations. (See the [2020-05 SigChecks specification](https://gitlab.com/bitcoin-cash-node/bchn-sw/bitcoincash-upgrade-specifications/-/blob/master/spec/2020-05-15-sigchecks.md).)
-- Cap the maximum density of hashing required in transaction validation to approximately `3.44` hash digest iterations per standard spending input byte<sup>1</sup>.
-- Cap the maximum stack usage of transaction validation to approximately `628` bytes per spending input byte<sup>2</sup>.
+- Cap the maximum density of hashing required in transaction input validation to approximately `3.44` hash digest iterations per standard spending input byte<sup>1</sup>.
+- Cap the maximum stack usage of transaction input validation to approximately `628` bytes per spending input byte<sup>2</sup>.
 - Cap the depth of the control stack to `100`<sup>3</sup>.
 
 While these limits have been sufficient to prevent Denial of Service (DOS) attacks by capping the maximum cost of transaction validation, their current design prevents valuable contract use cases and wastefully increases the size of certain transactions.
@@ -126,7 +126,7 @@ Currently, this limit impacts only the `OP_IF` and `OP_NOTIF` operations. For th
 
 A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), `OP_HASH256` (`0xaa`), `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), `OP_CHECKMULTISIGVERIFY` (`0xaf`), `OP_CHECKDATASIG` (`0xba`), and `OP_CHECKDATASIGVERIFY` (`0xbb`) to prevent excessive hashing function usage.
 
-Before a hashing function is performed, its expected cost – in terms of digest iterations – is added to a cumulative total for the transaction. If the cumulative digest iterations required to validate the spending transaction exceed the maximum allowed density, the operation produces an error. See [Rationale: Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations).
+Before a hashing function is performed, its expected cost – in terms of digest iterations – is added to a cumulative total for the transaction input. If the cumulative digest iterations required to validate the input exceed the maximum allowed density, the operation produces an error. See [Rationale: Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations).
 
 Note that hash digest iterations are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
@@ -161,7 +161,7 @@ Note that this formula does not rely on the precise encoded length of the input;
 
 #### Digest Iteration Count
 
-The hashing limit caps the number of iterations required by all hashing functions over the course of verifying a transaction. This places an upper limit on the sum of bytes hashed, including padding.
+The hashing limit caps the number of iterations required by all hashing functions over the course of verifying an input. This places an upper limit on the sum of bytes hashed, including padding.
 
 Given a message length, digest iterations may be calculated with the following C function:
 
@@ -222,9 +222,9 @@ Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses
 
 #### Hashing Operations
 
-The `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), and `OP_HASH256` (`0xaa`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction's cumulative count. If the new total exceeds the limit, validation fails.
+The `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), and `OP_HASH256` (`0xaa`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction input's cumulative count. If the new total exceeds the limit, validation fails.
 
-Note that evaluations triggering `P2SH20` and `P2SH32` evaluations must also account for the `3` hash digest iterations required to test validity of the redeem bytecode (`OP_HASH160 <20_bytes> OP_EQUAL` or `OP_HASH256 <32_bytes> OP_EQUAL`, respectively).
+Note that evaluations triggering `P2SH20` and `P2SH32` evaluations must also account for the (`2` or more) hash digest iterations required to test validity of the redeem bytecode (`OP_HASH160 <20_bytes> OP_EQUAL` or `OP_HASH256 <32_bytes> OP_EQUAL`, respectively).
 
 <details>
 <summary>Note on Two-Round Hashing Operations</summary>
@@ -235,13 +235,13 @@ The two-round hashing operations – `OP_HASH160` (`0xa9`) and `OP_HASH256` (`0x
 
 #### Transaction Signature Checking Operations
 
-Following the assembly of the signing serialization, the `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), and `OP_CHECKMULTISIGVERIFY` (`0xaf`) operations must compute the expected digest iterations for the length of the signing serialization (including the iteration in which the final result is double-hashed), adding the result to the spending transaction's cumulative count. If the new total exceeds the limit, validation fails.
+Following the assembly of the signing serialization, the `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), and `OP_CHECKMULTISIGVERIFY` (`0xaf`) operations must compute the expected digest iterations for the length of the signing serialization (including the iteration in which the final result is double-hashed), adding the result to the spending transaction input's cumulative count. If the new total exceeds the limit, validation fails.
 
 Note that hash digest iterations required to produce components of the signing serialization (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`) are excluded from the hashing limit, as implementations should cache these components across signature checks. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
 
 #### Data Signature Checking Operations
 
-The `OP_CHECKDATASIG` (`0xba`) and `OP_CHECKDATASIGVERIFY` (`0xbb`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction's cumulative count. If the new total exceeds the limit, validation fails.
+The `OP_CHECKDATASIG` (`0xba`) and `OP_CHECKDATASIGVERIFY` (`0xbb`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction input's cumulative count. If the new total exceeds the limit, validation fails.
 
 In counting digest iterations, note that these operations perform only a single round of hashing.
 
@@ -260,7 +260,7 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 
 ### Operation Cost Limit
 
-An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of approximately `800` per spending input byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
+An `Operation Cost Limit` is introduced, limiting transaction inputs to a cumulative operation cost of approximately `800` per spending input byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
 
 Given the spending input's unlocking bytecode length (A.K.A. `scriptSig`), the operation cost limit may be calculated with the following C function:
 
