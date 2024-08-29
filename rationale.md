@@ -119,7 +119,23 @@ Finally, setting an explicit base instruction cost reduces the VM’s implicit r
 
 <summary>Notes</summary>
 
-1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](#notice-of-possible-future-expansion).
+1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](readme.md#notice-of-possible-future-expansion).
+
+</details>
+
+### Inclusion of Numeric Encoding in Operation Costs
+
+The VM number format is designed to allow efficient manipulation of arbitrary-precision integers (Satoshi's initial VM implementation used the OpenSSL library's Multiple-Precision Integer format and operations), so sufficiently-optimized VM implementations can theoretically avoid the overhead of decoding and (re)encoding VM numbers. However, if this proposal were to assume zero operation cost for encoding/decoding, this optimization would be required of all performance-critical VM implementations to avoid divergence of real performance from measured operation cost.
+
+Instead, this proposal increments the operation cost of all operations dealing with potentially-large numbers (greater than `2**32`) by the byte length of their numeric output (in effect, doubling the cost of pushing the output). This approach fully accounts for the cost of re-encoding numerical results from another internal representation as VM numbers – regardless of the underlying arithmetic implementation. (Note that the cost of decoding VM number inputs is already accounted for (in advance) by the comprehensive limiting of pushed bytes. See [Rationale: Limitation of Pushed Bytes](#limitation-of-pushed-bytes).)
+
+Because operation cost can be safely reduced - but not increased - in future upgrades without invalidating contracts<sup>1</sup>, this proposal's approach is considered more conservative than omitting a cost for re-encoding.
+
+<details>
+
+<summary>Notes</summary>
+
+1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](readme.md#notice-of-possible-future-expansion).
 
 </details>
 

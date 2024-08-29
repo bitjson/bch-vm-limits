@@ -40,12 +40,14 @@ The following overview summarizes all changes proposed by this document to C++ i
 2. `nOpCount` becomes `nOpCost` (used to measure stack-pushed bytes and operation costs)
 3. A new `static inline pushstack` is added to match `popstack`; `pushstack` increments `nOpCost` by the item length.
 4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (no conditional, so also added for unexecuted and push operations).
-5. `case OP_AND/OP_OR/OP_XOR:` adds a `nOpCost += result.size();`
-6. `case OP_MUL/OP_DIV/OP_MOD:` adds a `nOpCost += a.size() * b.size();`
-7. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
-8. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` removed)
-9. `SigChecks` limits remain unchanged; similar density checks apply to `nHashDigestIterations` and `nOpCost`.
-10. Adds `if (vfExec.size() > 100) { return set_error(...`
+5. `case OP_ROLL:` adds `nOpCost += depth;`
+6. `case OP_AND/OP_OR/OP_XOR:` adds `nOpCost += result.size();`
+7. `case OP_1ADD...OP_0NOTEQUAL:` adds `nOpCost += bn.size();`, `case OP_ADD...OP_MAX:` adds `nOpCost += bn1.size() + bn2.size();`, `case OP_WITHIN:` adds `nOpCost += bn1.size() + bn2.size() + bn3.size().;`
+8. `case OP_MUL/OP_DIV/OP_MOD:` adds `nOpCost += a.size() * b.size();`
+9. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
+10. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` is removed)
+11. `SigChecks` limits remain unchanged; similar density checks apply to `nHashDigestIterations` and `nOpCost`.
+12. Adds `if (vfExec.size() > 100) { return set_error(...`
 
 </details>
 
@@ -130,16 +132,16 @@ Note that hash digest iterations are cumulative across all evaluation stages: un
 
 #### Maximum Hashing Density
 
-For standard transactions, the maximum density is `0.5` hash digest iterations per spending transaction byte; for block validation, the maximum density is `3.5` hash digest iterations per spending transaction byte. See [Rationale: Selection of Hashing Limit](rationale.md#selection-of-hashing-limit).
+For standard transactions, the maximum density is approximately `0.5` hash digest iterations per spending input byte; for block validation, the maximum density is approximately `3.5` hash digest iterations per spending input byte. See [Rationale: Selection of Hashing Limit](rationale.md#selection-of-hashing-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
 
-Given a spending transaction byte length, hash digest iteration limits may be calculated with the following C function:
+Given the spending input's unlocking bytecode length (A.K.A. `scriptSig`), hash digest iteration limits may be calculated with the following C functions:
 
 ```c
-int max_standard_iterations (int transaction_byte_length) {
-    return transaction_byte_length / 2;
+int max_standard_iterations (int unlocking_bytecode_length) {
+    return (41 + unlocking_bytecode_length) / 2;
 }
-int max_consensus_iterations (int transaction_byte_length) {
-    return (transaction_byte_length * 7) / 2;
+int max_consensus_iterations (int unlocking_bytecode_length) {
+    return ((41 + unlocking_bytecode_length) * 7) / 2;
 }
 ```
 
@@ -147,13 +149,15 @@ int max_consensus_iterations (int transaction_byte_length) {
 <summary>Calculate Maximum Digest Iterations in JavaScript</summary>
 
 ```js
-const maxStandardIterations = (transactionByteLength) =>
-  Math.floor(transactionByteLength / 2);
-const maxConsensusIterations = (transactionByteLength) =>
-  Math.floor((transactionByteLength * 7) / 2);
+const maxStandardIterations = (unlockingBytecodeLength) =>
+  Math.floor((41 + unlockingBytecodeLength) / 2);
+const maxConsensusIterations = (unlockingBytecodeLength) =>
+  Math.floor(((41 + unlockingBytecodeLength) * 7) / 2);
 ```
 
 </details>
+
+Note that this formula does not rely on the precise encoded length of the input; it instead adds the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
 
 #### Digest Iteration Count
 
@@ -266,7 +270,22 @@ Note that operation costs are cumulative across all evaluation stages: unlocking
 
 For all operations which push to the primary stack, operation cost is additionally incremented by the byte length of the pushed stack item. See [Rationale: Limitation of Pushed Bytes](rationale.md#limitation-of-pushed-bytes).
 
-This specification codifies the pushing behavior of each operation based on [`v27.0.0` of Bitcoin Cash Node](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/blob/49ad6a9a95bda543926ec90d07e7bd266581c4d0/src/script/interpreter.cpp), an implementation written in 2008 by Satoshi Nakamoto and continuously improved by various contributors. Counting of pushed bytes are consistent with this implementation with the exception of the bitwise operations (`OP_AND`, `OP_OR`, and `OP_XOR`), which are considered to push their result, even if an implementation performs bitwise operations in-place (e.g. for performance reasons).
+This specification codifies the pushing behavior of each operation based on [`v27.0.0` of Bitcoin Cash Node](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/blob/49ad6a9a95bda543926ec90d07e7bd266581c4d0/src/script/interpreter.cpp), an implementation written in 2008 by Satoshi Nakamoto and continuously improved by various contributors. Counting of pushed bytes are consistent with this implementation with the exception of `OP_ROLL` and the bitwise operations (`OP_AND`, `OP_OR`, and `OP_XOR`).
+
+##### Bitwise operations
+
+In addition to the aforementioned costs, the bitwise operations (`OP_AND`, `OP_OR`, and `OP_XOR`) are considered to push their result, even if an implementation performs bitwise operations in-place (e.g. for performance reasons).
+
+##### OP_ROLL
+
+In addition to the aforementioned costs, the operation cost of `OP_ROLL` is incremented by the numeric value indicating the depth of the roll, between `0` and `999` (the maximum-depth roll).
+
+<details>
+<summary>OP_ROLL Cost Example</summary>
+
+For example, `<'a'> <'b'> <'c'> <2> OP_ROLL` (producing `<'b'> <'c'> <'a'>`) is incremented by `2` for a total cost of `100` (the base instruction cost), plus `1` (the byte length of `'a'`), plus `2` (the roll depth): `103`.
+
+</details>
 
 <details>
 <summary>Operation Cost by Operation</summary>
@@ -396,7 +415,9 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 
 #### Arithmetic Operation Cost
 
-To account for <code>O(n<sup>2</sup>)</code> worst-case performance, the operation cost of `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), and `OP_MOD` (`0x97`) are increased by the product of their input lengths in addition to the length of their pushed result, i.e. for `a b -> c`, the operation cost is `100 + (a.length * b.length) + c.length`.
+To conservatively account for the cost of encoding VM numbers, the sum of all numeric output lengths with the potential to exceed `2**32` are added to the operation cost of all operations with such outputs: `OP_1ADD` (`0x8b`), `OP_1SUB` (`0x8c`), `OP_NEGATE` (`0x8f`), `OP_ABS` (`0x90`), `OP_NOT` (`0x91`), `OP_0NOTEQUAL` (`0x92`), `OP_ADD` (`0x93`), `OP_SUB` (`0x94`), `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), `OP_MOD` (`0x97`), `OP_BOOLAND` (`0x9a`), `OP_BOOLOR` (`0x9b`), `OP_NUMEQUAL` (`0x9c`), `OP_NUMEQUALVERIFY` (`0x9d`), `OP_NUMNOTEQUAL` (`0x9e`), `OP_LESSTHAN` (`0x9f`), `OP_GREATERTHAN` (`0xa0`), `OP_LESSTHANOREQUAL` (`0xa1`), `OP_GREATERTHANOREQUAL` (`0xa2`), `OP_MIN` (`0xa3`), `OP_MAX` (`0xa4`), and `OP_WITHIN` (`0xa5`); e.g. given terms `a b -> c` (such as in `<a> <b> OP_ADD`), the operation cost is: the base cost (`100`), plus the cost of re-encoding the output (`c.length`), plus the byte length of the result (`c.length`), for a final formula of `100 + (2 * c.length)`. See [Rationale: Inclusion of Numeric Encoding in Operation Costs](rationale.md#inclusion-of-numeric-encoding-in-operation-costs).
+
+To account for <code>O(n<sup>2</sup>)</code> worst-case performance, the operation cost of `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), and `OP_MOD` (`0x97`) are also increased by the product of their input lengths, i.e. given terms `a b -> c`, the operation cost is: the base cost (`100`) plus the cost of re-encoding the output (`c.length`), plus the byte length of the result (`c.length`), plus the product of the input lengths (`a.length * b.length`), for a final formula of `100 + (2 * c.length) + (a.length * b.length)`.
 
 #### Hash Digest Iteration Cost
 
@@ -471,6 +492,8 @@ Please see the following reference implementations for additional examples and t
 
 This section summarizes the evolution of this document.
 
+- **v3.1.0**
+  - Include numeric encoding in operation costs ([#20](https://github.com/bitjson/bch-vm-limits/issues/20))
 - **v3.0.1** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))
   - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
   - Clarify more differences between existing and upgraded behavior
