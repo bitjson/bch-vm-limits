@@ -224,7 +224,7 @@ Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses
 
 The `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256` (`0xa8`), `OP_HASH160` (`0xa9`), and `OP_HASH256` (`0xaa`) operations must compute the expected digest iterations for the length of the message to be hashed, adding the result to the spending transaction's cumulative count. If the new total exceeds the limit, validation fails.
 
-Note that evaluations triggering `P2SH20` and `P2SH32` evaluations must also account for the `3` hash digest iterations required to test validity of the redeem bytecode (`OP_HASH160 <20_bytes> OP_EQUAL` or `OP_HASH256 <32_bytes> OP_EQUAL`, respectively).
+Note that evaluations triggering `P2SH20` and `P2SH32` evaluations must also account for the `2` or more hash digest iterations required to test validity of the redeem bytecode (`OP_HASH160 <20_bytes> OP_EQUAL` or `OP_HASH256 <32_bytes> OP_EQUAL`, respectively).
 
 <details>
 <summary>Note on Two-Round Hashing Operations</summary>
