@@ -199,7 +199,7 @@ These test vectors reflect the required hash digest iterations for a variety of 
 | 120                    | 3                 |
 | 183                    | 3                 |
 | 184                    | 4                 |
-| 247                    | 5                 |
+| 247                    | 4                 |
 | 248                    | 5                 |
 | 488                    | 8                 |
 | 503                    | 8                 |
