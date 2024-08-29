@@ -128,7 +128,7 @@ A new limit is placed on `OP_RIPEMD160` (`0xa6`), `OP_SHA1` (`0xa7`), `OP_SHA256
 
 Before a hashing function is performed, its expected cost – in terms of digest iterations – is added to a cumulative total for the transaction input. If the cumulative digest iterations required to validate the input exceed the maximum allowed density, the operation produces an error. See [Rationale: Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations).
 
-Because the limit is on density, this means that transaction's total operation cost budget is effectively bought by transaction's size.
+Because the limit is on density, this means that input's total operation cost budget is effectively bought by input's size.
 This is by design, please see [Rationale: Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit).
 
 Note that hash digest iterations are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
@@ -285,7 +285,7 @@ const maxOperationCost = (unlockingBytecodeLength) =>
 
 Note that this formula does not rely on the precise encoded length of the input; it instead adds the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
 
-Because the limit is on density, this means that transaction's total operation cost budget is effectively bought by transaction's size.
+Because the limit is on density, this means that input's total operation cost budget is effectively bought by input's size.
 This is by design, please see [Rationale: Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit).
 
 For each evaluated instruction (including unexecuted and push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).

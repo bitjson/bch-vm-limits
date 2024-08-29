@@ -16,7 +16,7 @@ With the density-based approach, we can have maximum flexibility and functionali
 We could consider taking this approach further: having a shared budget per transaction, rather than per input.
 This would excerbate the effect of density-based approach: then users could then add filler inputs or outputs to create more budget for some other input inside the same transaction.
 This would allow even more functionality and flexibility for users, but it has other trade-offs.
-Please see [Rationale: Use of Input Length-Based Densities](#use-of-input-length--based-densities) below for further consideration.
+Please see [Rationale: Use of Input Length-Based Densities](#use-of-input-length-based-densities) below for further consideration.
 
 What are the alternatives to density-based operational cost?
 
