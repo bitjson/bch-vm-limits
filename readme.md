@@ -6,8 +6,8 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-08-13
-        Version: 3.0.1
+        Latest Revision Date: 2024-08-28
+        Version: 3.1.0
 
 ## Summary
 
@@ -15,8 +15,8 @@ This proposal replaces several poorly-targeted virtual machine (VM) limits with 
 
 - The 201 operation limit is removed.
 - The 520-byte stack element length limit is raised to 10,000 bytes, a constant equal to the consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE`) prior to this proposal.
-- A new operation cost limit is introduced, limiting contracts to approximately 700 bytes pushed to the stack per spending transaction byte, with increased costs for hashing, signature checking, and expensive arithmetic operations; constants are derived from the effective limit(s) prior to this proposal.
-- A new hashing limit is introduced, limiting contracts to 3.5 hash digest iterations per spending transaction byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to 0.5 hash digest iterations per spending transaction byte, the maximum-known, theoretically-useful hashing density.
+- A new operation cost limit is introduced, limiting contracts to approximately 700 bytes pushed to the stack per spending input byte, with increased costs for hashing, signature checking, and expensive arithmetic operations; constants are derived from the effective limit(s) prior to this proposal.
+- A new hashing limit is introduced, limiting contracts to 3.5 hash digest iterations per spending input byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to 0.5 hash digest iterations per spending input byte, the maximum-known, theoretically-useful hashing density.
 - A new control stack limit is introduced, limiting control flow operations (`OP_IF` and `OP_NOTIF`) to a depth of 100, the effective limit prior to this proposal.
 
 This proposal **intentionally avoids modifying other existing properties of the VM**:
@@ -68,8 +68,8 @@ Bitcoin Cash contracts are strictly limited to prevent maliciously-designed tran
 Collectively, existing limits:
 
 - Cap the maximum density of both hashing and elliptic curve math required for validation of signature checking operations. (See the [2020-05 SigChecks specification](https://gitlab.com/bitcoin-cash-node/bchn-sw/bitcoincash-upgrade-specifications/-/blob/master/spec/2020-05-15-sigchecks.md).)
-- Cap the maximum density of hashing required in transaction validation to approximately `3.44` hash digest iterations per standard spending transaction byte<sup>1</sup>.
-- Cap the maximum stack usage of transaction validation to approximately `628` bytes per spending transaction byte<sup>2</sup>.
+- Cap the maximum density of hashing required in transaction validation to approximately `3.44` hash digest iterations per standard spending input byte<sup>1</sup>.
+- Cap the maximum stack usage of transaction validation to approximately `628` bytes per spending input byte<sup>2</sup>.
 - Cap the depth of the control stack to `100`<sup>3</sup>.
 
 While these limits have been sufficient to prevent Denial of Service (DOS) attacks by capping the maximum cost of transaction validation, their current design prevents valuable contract use cases and wastefully increases the size of certain transactions.
@@ -260,7 +260,27 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 
 ### Operation Cost Limit
 
-An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of `800` per spending transaction byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit).
+An `Operation Cost Limit` is introduced, limiting transactions to a cumulative operation cost of approximately `800` per spending input byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
+
+Given the spending input's unlocking bytecode length (A.K.A. `scriptSig`), the operation cost limit may be calculated with the following C function:
+
+```c
+int max_operation_cost (int unlocking_bytecode_length) {
+    return (41 + unlocking_bytecode_length) * 800;
+}
+```
+
+<details>
+<summary>Calculate Maximum Operation Cost in JavaScript</summary>
+
+```js
+const maxOperationCost = (unlockingBytecodeLength) =>
+  Math.floor((41 + unlockingBytecodeLength) * 800);
+```
+
+</details>
+
+Note that this formula does not rely on the precise encoded length of the input; it instead adds the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
 
 For each evaluated instruction (including unexecuted and push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
 
@@ -337,31 +357,31 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_AND`                   | `0x84`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
 | `OP_OR`                    | `0x85`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
 | `OP_XOR`                   | `0x86`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
-| `OP_EQUAL`                 | `0x87`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
+| `OP_EQUAL`                 | `0x87`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
 | `OP_EQUALVERIFY`           | `0x88`         |                                                                           | `100`                                                               |
-| `OP_1ADD`                  | `0x8b`         | `a` → `b`                                                                 | `100 + b.length`                                                    |
-| `OP_1SUB`                  | `0x8c`         | `a` → `b`                                                                 | `100 + b.length`                                                    |
-| `OP_NEGATE`                | `0x8f`         | `a` → `b`                                                                 | `100 + b.length`                                                    |
-| `OP_ABS`                   | `0x90`         | `a` → `b`                                                                 | `100 + b.length`                                                    |
-| `OP_NOT`                   | `0x91`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_0NOTEQUAL`             | `0x92`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_ADD`                   | `0x93`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
-| `OP_SUB`                   | `0x94`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
-| `OP_MUL`                   | `0x95`         | `a b` → `c`                                                               | `100 + (a.length * b.length) + c.length`                            |
-| `OP_DIV`                   | `0x96`         | `a b` → `c`                                                               | `100 + (a.length * b.length) + c.length`                            |
-| `OP_MOD`                   | `0x97`         | `a b` → `c`                                                               | `100 + (a.length * b.length) + c.length`                            |
-| `OP_BOOLAND`               | `0x9a`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_BOOLOR`                | `0x9b`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_NUMEQUAL`              | `0x9c`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_NUMEQUALVERIFY`        | `0x9d`         |                                                                           | `100`                                                               |
-| `OP_NUMNOTEQUAL`           | `0x9e`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_LESSTHAN`              | `0x9f`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_GREATERTHAN`           | `0xa0`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_LESSTHANOREQUAL`       | `0xa1`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_GREATERTHANOREQUAL`    | `0xa2`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_MIN`                   | `0xa3`         | `a b` → `c` (where `c` is minimum of `a` and `b`)                         | `100 + c.length`                                                    |
-| `OP_MAX`                   | `0xa4`         | `a b` → `c` (where `c` is maximum of `a` and `b`)                         | `100 + c.length`                                                    |
-| `OP_WITHIN`                | `0xa5`         |                                                                           | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
+| `OP_1ADD`                  | `0x8b`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
+| `OP_1SUB`                  | `0x8c`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
+| `OP_NEGATE`                | `0x8f`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
+| `OP_ABS`                   | `0x90`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
+| `OP_NOT`                   | `0x91`         | `a` → `0` **OR** `1`                                                      | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_0NOTEQUAL`             | `0x92`         | `a` → `0` **OR** `1`                                                      | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_ADD`                   | `0x93`         | `a b` → `c`                                                               | `100 + (2 * c.length)`                                              |
+| `OP_SUB`                   | `0x94`         | `a b` → `c`                                                               | `100 + (2 * c.length)`                                              |
+| `OP_MUL`                   | `0x95`         | `a b` → `c`                                                               | `100 + (2 * c.length) + (a.length * b.length)`                      |
+| `OP_DIV`                   | `0x96`         | `a b` → `c`                                                               | `100 + (2 * c.length) + (a.length * b.length)`                      |
+| `OP_MOD`                   | `0x97`         | `a b` → `c`                                                               | `100 + (2 * c.length) + (a.length * b.length)`                      |
+| `OP_BOOLAND`               | `0x9a`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_BOOLOR`                | `0x9b`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_NUMEQUAL`              | `0x9c`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_NUMEQUALVERIFY`        | `0x9d`         | `a b` → (none)                                                            | `100`                                                               |
+| `OP_NUMNOTEQUAL`           | `0x9e`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_LESSTHAN`              | `0x9f`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_GREATERTHAN`           | `0xa0`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_LESSTHANOREQUAL`       | `0xa1`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_GREATERTHANOREQUAL`    | `0xa2`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
+| `OP_MIN`                   | `0xa3`         | `a b` → `c` (where `c` is minimum of `a` and `b`)                         | `100 + (2 * c.length)`                                              |
+| `OP_MAX`                   | `0xa4`         | `a b` → `c` (where `c` is maximum of `a` and `b`)                         | `100 + (2 * c.length)`                                              |
+| `OP_WITHIN`                | `0xa5`         | `a b c` → `0` **OR** `1`                                                  | `100` (for `0`), `100 + 1` for `1`                                  |
 | `OP_RIPEMD160`             | `0xa6`         | `a` → `b` (Showing standard cost<sup>1</sup>)                             | `100 + (iterations * 192) + b.length`                               |
 | `OP_SHA1`                  | `0xa7`         | `a` → `b` (Showing standard cost<sup>1</sup>)                             | `100 + (iterations * 192) + b.length`                               |
 | `OP_SHA256`                | `0xa8`         | `a` → `b` (Showing standard cost<sup>1</sup>)                             | `100 + (iterations * 192) + b.length`                               |
@@ -493,6 +513,7 @@ Please see the following reference implementations for additional examples and t
 This section summarizes the evolution of this document.
 
 - **v3.1.0**
+  - Base densities on input length rather than transaction length ([#21](https://github.com/bitjson/bch-vm-limits/issues/21))
   - Include numeric encoding in operation costs ([#20](https://github.com/bitjson/bch-vm-limits/issues/20))
 - **v3.0.1** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))
   - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
