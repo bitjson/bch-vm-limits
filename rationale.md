@@ -41,19 +41,47 @@ The existing control stack depth of `100` is already far in excess of all known 
 
 </details>
 
+### Use of Input Length-Based Densities
+
+This proposal limits both [hashing](readme.md#hashing-limit) and [operation cost](readme.md#operation-cost-limit) to maximum densities based on the approximate byte length of the input under evaluation (see [Rationale: Selection of Input Length Formula](#selection-of-input-length-formula)).
+
+Alternatively, this proposal could measure densities relative to the byte length of the full containing transaction, sharing a budget across all of the transaction's inputs. Such a transaction-based approach would provide contracts with the most generous possible computation limits given the transaction fees paid, allowing computationally-expensive inputs to also claim the computing resources purchased via the bytes of transaction overhead, outputs, and of other inputs. Additionally, if a future upgrade were to [relax output standardness](https://bitcoincashresearch.org/t/p2sh32-a-long-term-solution-for-80-bit-p2sh-collision-attacks/750/13#relaxing-output-standardness-1), transaction-based budgets would also offer non-P2SH (Pay to Script Hash) contracts a greater portion of the computing resources purchased via the transaction's other bytes, particularly for contracts which rely mainly on introspection for validation and include little or no unlocking bytecode (e.g. the ["Merge Threads" script in Jedex](https://github.com/bitjson/jedex)).
+
+However, this proposal's input-based approach is superior in that it: 1) allows contract authors to reliably predict a contract's available limits regardless of the size and other contents of the spending transaction, 2) ensures that contract evaluations which do not exceed VM limits can be composed together in multi-input transactions without further regard for VM limits, 3) preserves the simplicity of parallelizing input validation without cross-thread communication, 4) more conservatively limits the worst-case validation performance of maliciously-invalid transactions (by failing the malicious transaction earlier), and 5) could be safely expanded into a transaction-based approach by a future upgrade if necessary.
+
+Another alternative to offer greater limits to non-P2SH contracts would be to base densities on the byte length of both locking and unlocking bytecode, i.e. including the Unspent Transaction Output (UTXO) in the input's budget. However, this alternative approach would increase the volatility of worst-case transaction validation performance: the price of the UTXO's past bandwidth is paid by the previous transaction's mining fee, while the price of the UTXO's storage is paid only by the time-value of associated dust; if compute resources aren't strictly tied to costs in the present (like the current transaction's mining fee), the instantaneous computation requirements of transaction validation are not bound (e.g. by slow-to-validate UTXOs may be stored up and evaluated in a smaller number of attack transactions). Instead, this proposal bases computation limits only on costs paid in the present, with the 41-byte minimum input length providing a reasonable minimum computation budgets.
+
+Finally, this proposal could also increase the operation cost limit proportionally to the per-byte mining fee paid, e.g. for fee rates of `2` satoshis-per-byte, the VM could allow a per-byte budget of `2000` (a `2.5` multiple, incentivizing contracts to pay the higher fee rate rather than simply padding the unlocking bytecode length). However, any allowed increase in per-byte operation cost also equivalently changes the variability of per-byte worst-case transaction validation time; such flexibility would need to be conservatively capped and/or interact with the block size limit to ensure predictability of transaction and block validation requirements. Additionally, future research based on real-world usage may support simpler alternatives, e.g. a one-time increase in the per-byte operation cost budget.
+
+As this proposal attempts to avoid any impact to worst-case validation time – and future upgrades can safely deploy increases in operation cost limits – solutions for increasing operation cost limits are considered out of this proposal's scope.
+
+### Selection of Input Length Formula
+
+The [Hashing](readme.md#hashing-limit) and [Operation Cost](readme.md#operation-cost-limit) limits in this proposal approximate the encoded length of inputs by adding the length of the unlocking bytecode to the constant `41`: the minimum possible per-input overhead of version `1` and `2` transactions<sup>1</sup>. This approach both simplifies implementations – by avoiding the need to either check the length of the serialized input or compute its expected length – and simplifies some contract development and deployment concerns by avoiding the 2-byte change in available budget as contract length increases from `252` bytes (encoded as `0xfc`) to `253` bytes (encoded as `0xfdfd00`).
+
+Additionally, by avoiding direct use of encoded input length in limit calculations, the selected formula avoids directly tying the application of VM limits to the encoding format of the containing transaction. This ensures that contracts designed for use in version `1` and `2` transactions may retain equivalent limits even if evaluated within future transaction version(s) that more efficiently encode transaction inputs.
+
+<details>
+
+<summary>Notes</summary>
+
+1. Outpoint Transaction Hash (32 bytes), Outpoint Index (4 bytes), `Unlocking Bytecode Length` (minimum 1 byte), `Unlocking Bytecode`, and Sequence Number (4 bytes): `32 + 4 + 1 + 4 = 41`.
+
+</details>
+
 ### Hashing Limit by Digest Iterations
 
-One possible alternative to the proposed [Hashing Limit](#hashing-limit) design is to limit evaluations to a fixed count of "bytes hashed" (rather than digest iterations). While this seems simpler, it performs poorly in an adversarial environment: an attacker can choose message sizes to minimize bytes hashed while maximizing digest iterations required (e.g. 1-byte messages).
+One possible alternative to the proposed [Hashing Limit](readme.md#hashing-limit) design is to limit evaluations to a fixed count of "bytes hashed" (rather than digest iterations). While this seems simpler, it performs poorly in an adversarial environment: an attacker can choose message sizes to minimize bytes hashed while maximizing digest iterations required (e.g. 1-byte messages).
 
 By directly measuring digest iterations, non-malicious contracts can be allowed to evaluate a higher density of hashing operations without increasing the worst-case validation requirements of the VM as it existed prior to this proposal.
 
 ### Selection of Hashing Limit
 
-This proposal sets the standard (transaction relay policy) hashing density limit at `0.5` digest iterations per spending transaction byte. This value is the asymptotic maximum density of hashing operations in plausibly non-malicious, standard transactions within the current VM limits and instruction set: assuming no transaction encoding overhead and that all hashed material is maximally-padded (1-byte segments), the most efficient methods for reducing hashed material into a single result (without any further processing) requires 1 additional operation (e.g. `OP_CAT`) per hashing operation<sup>1</sup>.
+This proposal sets the standard (transaction relay policy) hashing density limit at `0.5` digest iterations per spending input byte. This value is the asymptotic maximum density of hashing operations in plausibly non-malicious, standard transactions within the current VM limits and instruction set: assuming no transaction encoding overhead and that all hashed material is maximally-padded (1-byte segments), the most efficient methods for reducing hashed material into a single result (without any further processing) requires 1 additional operation (e.g. `OP_CAT`) per hashing operation<sup>1</sup>.
 
 Note that this standard limit is also well in excess of the highest density found in any standard transaction maximizing hashing within signature checking operations: `0.30` digest iterations per byte<sup>2</sup>.
 
-For block validation, this proposal sets the consensus limit (A.K.A. "nonstandard") hashing density at `3.5` digest iterations per spending transaction byte. This limit exceeds the highest-known density of any currently standard transaction of `3.44` digest iterations per byte<sup>3</sup>. Ideally, a separate nonstandard limit could be avoided, but because currently-standard transactions can be designed to exceed the `0.5` limit, a higher nonstandard limit is necessary to avoid immediately invaliding any currently-standard transactions<sup>4</sup>. Future proposals could schedule an upgrade to consolidate these limits.
+For block validation, this proposal sets the consensus limit (A.K.A. "nonstandard") hashing density at `3.5` digest iterations per spending input byte. This limit exceeds the highest-known density of any currently standard transaction of `3.44` digest iterations per byte<sup>3</sup>. Ideally, a separate nonstandard limit could be avoided, but because currently-standard transactions can be designed to exceed the `0.5` limit, a higher nonstandard limit is necessary to avoid immediately invaliding any currently-standard transactions<sup>4</sup>. Future proposals could schedule an upgrade to consolidate these limits.
 
 Alternatively, this proposal could set a consensus hashing limit without a lower standardness limit. However, hashing cannot be [reliably deferred like signature validation](#continued-availability-of-deferred-signature-validation); because the current practical limit is nearly an order of magnitude higher then theoretically useful, limiting the density allowed in standard validation significantly improves worst-case validation performance.
 
@@ -70,11 +98,9 @@ Alternatively, this proposal could set a consensus hashing limit without a lower
 
 ### Exclusion of Signing Serialization Components from Hashing Limit
 
-This proposal includes [the cost of hashing all signing serializations](#transaction-signature-checking-operations) in the proposed `Hashing Limit`, but it excludes the cost of any hashing required to produce the internal components of signing serializations (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`). This configuration reduces protocol complexity while correctly accounting for the real-world hashing cost of `coveredBytecode` (A.K.A. `scriptCode`), particularly in [preventing abuse of `OP_CODESEPARATOR`](https://gist.github.com/markblundeberg/c2c88d25d5f34213830e48d459cbfb44), future increases to maximum standard input bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), and/or increases to consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes).
+This proposal includes [the cost of hashing all signing serializations](readme.md#transaction-signature-checking-operations) in the proposed `Hashing Limit`, but it excludes the cost of any hashing required to produce the internal components of signing serializations (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`). This configuration reduces protocol complexity while correctly accounting for the real-world hashing cost of `coveredBytecode` (A.K.A. `scriptCode`), particularly in [preventing abuse of `OP_CODESEPARATOR`](https://gist.github.com/markblundeberg/c2c88d25d5f34213830e48d459cbfb44), future increases to maximum standard unlocking bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), and/or increases to consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes).
 
 Alternatively, this proposal could also require internally accounting for the cost of hashing within signing serialization components. However, because components can be easily cached across signature checks – and for `hashPrevouts`, `hashUtxos`, `hashSequence`, across the entire transaction validation – such costs would need to be amortized across all of a transaction's signature checks to approximate their fixed, real-world cost. As signature checking is already sufficiently limited by `SigChecks` and operation cost, omitting hash digest iteration counting of signing serialization components reduces unnecessary protocol complexity.
-
-Notably, this proposal's accounting strategy would also remain reasonable if a future upgrade were to [relax output standardness](https://bitcoincashresearch.org/t/p2sh32-a-long-term-solution-for-80-bit-p2sh-collision-attacks/750/13#relaxing-output-standardness-1); though the corresponding output setting of `hashOutputs` (A.K.A. `SIGHASH_SINGLE`) can only be cached for the current input, any increase in the length of an input's corresponding output would necessarily increase the length of the spending transaction, lifting the transaction's cumulative hashing "budget" at a faster rate than the increase in hashing cost.
 
 #### Ongoing Value of OP_CODESEPARATOR Operation
 
@@ -94,9 +120,9 @@ While this eccentric behavior was likely unintentional, it has been available to
 
 ### Limitation of Pushed Bytes
 
-This proposal limits the density of both memory usage and computation by limiting bytes pushed to the stack to approximately `700` per spending transaction byte (the per-byte budget of `800` minus the base instruction cost of `100`).
+This proposal limits the density of both memory usage and computation by limiting bytes pushed to the stack to approximately `700` per spending input byte (the per-byte budget of `800` minus the base instruction cost of `100`).
 
-Because stack-pushed bytes become inputs to other operations, limiting the overall density of pushed bytes is the most comprehensive method of limiting all linear-time operations (bitwise operations, `OP_DUP`, `OP_EQUAL`, `OP_REVERSEBYTES`, etc.); this approach reduces protocol complexity by avoiding special accounting for all but the most expensive operations (arithmetic, hashing, and signature checking).
+Because stack-pushed bytes become inputs to other operations, limiting the overall density of pushed bytes is the most comprehensive method of limiting all sub-linear and linear-time operations (bitwise operations, VM number decoding, `OP_DUP`, `OP_EQUAL`, `OP_REVERSEBYTES`, etc.); this approach increases safety by ensuring that any source of linear time complexity in any operation (e.g. due to a defect in a particular VM implementation) cannot create practically-exploitable performance issues (providing [defense in depth](<https://en.wikipedia.org/wiki/Defense_in_depth_(computing)>)) and reduces protocol complexity by avoiding special accounting for all but the most expensive operations (arithmetic, hashing, and signature checking).
 
 Additionally, this proposal’s density-based limit caps the maximum memory and memory bandwidth requirements of validating a large stream of transactions, regardless of the number of parallel validations being performed<sup>1</sup>.
 
@@ -116,13 +142,13 @@ While this proposal maintains independent limits for both signature checking and
 
 ### Selection of Operation Cost Limit
 
-This proposal sets the operation cost density at `800` per spending transaction byte. Given a base instruction cost of `100`, this density ensures a net budget of `700` per spending transaction byte, a constant rounded up from the maximum effective limit prior to this proposal<sup>1</sup>.
+This proposal sets the operation cost density at `800` per spending input byte. Given a base instruction cost of `100`, this density ensures a net budget of `700` per spending input byte, a constant rounded up from the maximum effective limit prior to this proposal<sup>1</sup>.
 
 <details>
 
 <summary>Notes</summary>
 
-1. Benchmark `d0kxwp` (`99966` bytes) pushes `62757175` bytes, approximately `627.79` bytes per spending transaction byte.
+1. Benchmark `d0kxwp` (`99966` bytes) pushes `62757175` bytes, approximately `627.79` bytes per spending input byte.
 
 </details>
 
@@ -130,7 +156,7 @@ This proposal sets the operation cost density at `800` per spending transaction 
 
 To retain a conservative limit on contract operation density, this proposal sets a base operation cost of `100` per evaluated instruction, including unexecuted and push operations.
 
-Given the [operation cost density limit of `800`](#operation-cost-limit), a base instruction cost of `100` ensures that the maximum operation density within spending transactions (8 per byte) remains within an order of magnitude of the current effective limit (approximately 1 per byte) resulting from the 201 operation limit.
+Given the [operation cost density limit of `800`](readme.md#operation-cost-limit), a base instruction cost of `100` ensures that the maximum operation density within spending inputs (8 per byte) remains within an order of magnitude of the current effective limit (approximately 1 per byte) resulting from the 201 operation limit.
 
 Because base instruction cost can be safely reduced - but not increased - in future upgrades without invalidating contracts<sup>1</sup>, a base cost of `100` is more conservative than lower values (like `10`, `1`, or `0`). Additionally, a relatively-high base instruction cost leaves room for future upgrades to differentiate the costs of existing low and fixed-cost instructions, if necessary.
 
@@ -142,7 +168,23 @@ Finally, setting an explicit base instruction cost reduces the VM’s implicit r
 
 <summary>Notes</summary>
 
-1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](#notice-of-possible-future-expansion).
+1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](readme.md#notice-of-possible-future-expansion).
+
+</details>
+
+### Inclusion of Numeric Encoding in Operation Costs
+
+The VM number format is designed to allow efficient manipulation of arbitrary-precision integers (Satoshi's initial VM implementation used the OpenSSL library's Multiple-Precision Integer format and operations), so sufficiently-optimized VM implementations can theoretically avoid the overhead of decoding and (re)encoding VM numbers. However, if this proposal were to assume zero operation cost for encoding/decoding, this optimization would be required of all performance-critical VM implementations to avoid divergence of real performance from measured operation cost.
+
+Instead, this proposal increments the operation cost of all operations dealing with potentially-large numbers (greater than `2**32`) by the byte length of their numeric output (in effect, doubling the cost of pushing the output). This approach fully accounts for the cost of re-encoding numerical results from another internal representation as VM numbers – regardless of the underlying arithmetic implementation. (Note that the cost of decoding VM number inputs is already accounted for (in advance) by the comprehensive limiting of pushed bytes. See [Rationale: Limitation of Pushed Bytes](#limitation-of-pushed-bytes).)
+
+Because operation cost can be safely reduced - but not increased - in future upgrades without invalidating contracts<sup>1</sup>, this proposal's approach is considered more conservative than omitting a cost for re-encoding.
+
+<details>
+
+<summary>Notes</summary>
+
+1. Note that pre-signed transactions, contract systems, and protocols can be specifically designed to operate on any observable characteristic of the VM, including limits. See [Notice of Possible Future Expansion](readme.md#notice-of-possible-future-expansion).
 
 </details>
 
@@ -176,7 +218,7 @@ For block validation (consensus), this proposal sets the operation cost of hash 
 
 Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses a [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) with a `block size` of 512 bits (64 bytes); operation cost is essentially a count of bytes processed by any VM operation, so the hashing algorithm block size (`64`) is the most appropriate multiple upon which to base hashing operation cost calculations.
 
-Under the existing limits, the highest possible hashing density of a standard transaction is `3.44` hash digest iterations per spending transaction byte<sup>1</sup>. Given a budget of `800` per byte, it is not possible to set a higher multiple of `64` for the consensus operation cost of hash digest iterations (e.g. `128`) without invalidating currently-standard transactions<sup>2</sup>. As such, this proposal sets the consensus operation cost of hash digest iterations to `64`.
+Under the existing limits, the highest possible hashing density of a standard transaction is `3.44` hash digest iterations per spending input byte<sup>1</sup>. Given a budget of `800` per byte, it is not possible to set a higher multiple of `64` for the consensus operation cost of hash digest iterations (e.g. `128`) without invalidating currently-standard transactions<sup>2</sup>. As such, this proposal sets the consensus operation cost of hash digest iterations to `64`.
 
 To determine the standard operation cost of hash digest iterations, the results of multiple representative benchmarks can be compared across multiple independent VM implementations; in a variety of cases, given a [signature checking cost of `26000`](#selection-of-signature-verification-operation-cost), the closest multiple of `64` to real-world performance cost is `192`<sup>3</sup>.
 
@@ -191,4 +233,4 @@ To determine the standard operation cost of hash digest iterations, the results 
 
 ### Inclusion of "Notice of Possible Future Expansion"
 
-This proposal includes a [Notice of Possible Future Expansion](#notice-of-possible-future-expansion) to clarify established precedent in Bitcoin (Cash) protocol development: pre-signed transactions, contract systems, and protocols which rely on the non-existence of VM features must be interpreted as intentional. This precedent was established by Satoshi Nakamoto in [`reverted makefile.unix wx-config -- version 0.3.6`](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/commit/757f0769d8360ea043f469f3a35f6ec204740446) (July 29, 2010) with the addition of new opcodes `OP_NOP1` to `OP_NOP10`, and the precedent was reaffirmed by numerous upgrades to Bitcoin (Cash), e.g. [`OP_CHECKLOCKTIMEVERIFY`](https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki), [Relative locktime](https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki), [`OP_CHECKSEQUENCEVERIFY`](https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki), the [2018 opcode restoration](https://upgradespecs.bitcoincashnode.org/may-2018-reenabled-opcodes/), [CHIP-2021-03: Bigger Script Integers](https://gitlab.com/GeneralProtocols/research/chips/-/blob/master/CHIP-2021-02-Bigger-Script-Integers.md#notice-of-possible-future-expansion), and later upgrades.
+This proposal includes a [Notice of Possible Future Expansion](readme.md#notice-of-possible-future-expansion) to clarify established precedent in Bitcoin (Cash) protocol development: pre-signed transactions, contract systems, and protocols which rely on the non-existence of VM features must be interpreted as intentional. This precedent was established by Satoshi Nakamoto in [`reverted makefile.unix wx-config -- version 0.3.6`](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/commit/757f0769d8360ea043f469f3a35f6ec204740446) (July 29, 2010) with the addition of new opcodes `OP_NOP1` to `OP_NOP10`, and the precedent was reaffirmed by numerous upgrades to Bitcoin (Cash), e.g. [`OP_CHECKLOCKTIMEVERIFY`](https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki), [Relative locktime](https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki), [`OP_CHECKSEQUENCEVERIFY`](https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki), the [2018 opcode restoration](https://upgradespecs.bitcoincashnode.org/may-2018-reenabled-opcodes/), [CHIP-2021-03: Bigger Script Integers](https://gitlab.com/GeneralProtocols/research/chips/-/blob/master/CHIP-2021-02-Bigger-Script-Integers.md#notice-of-possible-future-expansion), and later upgrades.
