@@ -471,6 +471,8 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
 
 - [Appendix: Rationale &rarr;](rationale.md#rationale)
   - [Retention of Control Stack Limit](rationale.md#retention-of-control-stack-limit)
+  - [Use of Input Length-Based Densities](rationale.md#use-of-input-length-based-densities)
+  - [Selection of Input Length Formula](rationale.md#selection-of-input-length-formula)
   - [Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations)
   - [Selection of Hashing Limit](rationale.md#selection-of-hashing-limit)
   - [Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit)
@@ -480,6 +482,7 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
   - [Unification of Limits into Operation Cost](rationale.md#unification-of-limits-into-operation-cost)
   - [Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit)
   - [Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost)
+  - [Inclusion of Numeric Encoding in Operation Costs](rationale.md#inclusion-of-numeric-encoding-in-operation-costs)
   - [Selection of Signature Verification Operation Cost](rationale.md#selection-of-signature-verification-operation-cost)
   - [Continued Availability of Deferred Signature Validation](rationale.md#continued-availability-of-deferred-signature-validation)
   - [Selection of Hash Digest Iteration Cost](rationale.md#selection-of-hash-digest-iteration-cost)
