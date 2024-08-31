@@ -358,7 +358,7 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_OR`                    | `0x85`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
 | `OP_XOR`                   | `0x86`         | `a b` → `c`                                                               | `100 + c.length`                                                    |
 | `OP_EQUAL`                 | `0x87`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`) **OR** `100 + 1` (for `1`)                          |
-| `OP_EQUALVERIFY`           | `0x88`         |                                                                           | `100`                                                               |
+| `OP_EQUALVERIFY`           | `0x88`         |                                                                           | `100 + 1`                                                           |
 | `OP_1ADD`                  | `0x8b`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
 | `OP_1SUB`                  | `0x8c`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
 | `OP_NEGATE`                | `0x8f`         | `a` → `b`                                                                 | `100 + (2 * b.length)`                                              |
@@ -373,7 +373,7 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_BOOLAND`               | `0x9a`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
 | `OP_BOOLOR`                | `0x9b`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
 | `OP_NUMEQUAL`              | `0x9c`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
-| `OP_NUMEQUALVERIFY`        | `0x9d`         | `a b` → (none)                                                            | `100`                                                               |
+| `OP_NUMEQUALVERIFY`        | `0x9d`         | `a b` → (none)                                                            | `100 + 1`                                                           |
 | `OP_NUMNOTEQUAL`           | `0x9e`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
 | `OP_LESSTHAN`              | `0x9f`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
 | `OP_GREATERTHAN`           | `0xa0`         | `a b` → `0` **OR** `1`                                                    | `100` (for `0`), `100 + 1` for `1`                                  |
@@ -389,9 +389,9 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_HASH256`               | `0xaa`         | `a` → `b` (Showing standard cost<sup>1</sup>)                             | `100 + ((iterations + 1) * 192) + b.length`                         |
 | `OP_CODESEPARATOR`         | `0xab`         |                                                                           | `100`                                                               |
 | `OP_CHECKSIG`              | `0xac`         | Null signature checks are `100` (Showing standard cost<sup>1</sup>)       | `100` (for `0`) **OR** `100 + 26000 + (iterations * 192) + 1`       |
-| `OP_CHECKSIGVERIFY`        | `0xad`         | (Showing standard cost<sup>1</sup>)                                       | `100 + 26000 + (iterations * 192)`                                  |
+| `OP_CHECKSIGVERIFY`        | `0xad`         | (Showing standard cost<sup>1</sup>)                                       | `100 + 26000 + (iterations * 192) + 1`                              |
 | `OP_CHECKMULTISIG`         | `0xae`         | M-of-N; K=M for Schnorr, N for legacy (Showing standard cost<sup>1</sup>) | `100` (for `0`) **OR** `100 + (26000 * K) + (iterations * 192) + 1` |
-| `OP_CHECKMULTISIGVERIFY`   | `0xaf`         | M-of-N; K=M for Schnorr, N for legacy (Showing standard cost<sup>1</sup>) | `100 + (26000 * K) + (iterations * 192)`                            |
+| `OP_CHECKMULTISIGVERIFY`   | `0xaf`         | M-of-N; K=M for Schnorr, N for legacy (Showing standard cost<sup>1</sup>) | `100 + (26000 * K) + (iterations * 192) + 1`                        |
 | `OP_NOP1`                  | `0xb0`         |                                                                           | `100`                                                               |
 | `OP_CHECKLOCKTIMEVERIFY`   | `0xb1`         |                                                                           | `100`                                                               |
 | `OP_CHECKSEQUENCEVERIFY`   | `0xb2`         |                                                                           | `100`                                                               |
@@ -403,7 +403,7 @@ The full, **standard operation cost**<sup>1</sup> for each executed operation<su
 | `OP_NOP9`                  | `0xb8`         |                                                                           | `100`                                                               |
 | `OP_NOP10`                 | `0xb9`         |                                                                           | `100`                                                               |
 | `OP_CHECKDATASIG`          | `0xba`         | Null signature check is `100` (Showing standard cost<sup>1</sup>)         | `100` (for `0`) **OR** `100 + 26000 + (iterations * 192) + 1`       |
-| `OP_CHECKDATASIGVERIFY`    | `0xbb`         | (Showing standard cost<sup>1</sup>)                                       | `100 + 26000 + (iterations * 192)`                                  |
+| `OP_CHECKDATASIGVERIFY`    | `0xbb`         | (Showing standard cost<sup>1</sup>)                                       | `100 + 26000 + (iterations * 192) + 1`                              |
 | `OP_REVERSEBYTES`          | `0xbc`         | `a` → `b`                                                                 | `100 + b.length`                                                    |
 | `OP_INPUTINDEX`            | `0xc0`         | ` ` → `a`                                                                 | `100 + a.length`                                                    |
 | `OP_ACTIVEBYTECODE`        | `0xc1`         | ` ` → `a`                                                                 | `100 + a.length`                                                    |
