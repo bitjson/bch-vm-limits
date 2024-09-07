@@ -14,7 +14,7 @@ These filler bytes would have to pay transaction fees just like any other transa
 With the density-based approach, we can have maximum flexibility and functionality so this is seen as an acceptable trade-off.
 
 We could consider taking this approach further: having a shared budget per transaction, rather than per input.
-This would excerbate the effect of density-based approach: then users could then add filler inputs or outputs to create more budget for some other input inside the same transaction.
+This would exacerbate the effect of density-based approach: then users could then add filler inputs or outputs to create more budget for some other input inside the same transaction.
 This would allow even more functionality and flexibility for users, but it has other trade-offs.
 Please see [Rationale: Use of Input Length-Based Densities](#use-of-input-length-based-densities) below for further consideration.
 
