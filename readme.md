@@ -275,7 +275,7 @@ int max_operation_cost (int unlocking_bytecode_length) {
 
 ```js
 const maxOperationCost = (unlockingBytecodeLength) =>
-  Math.floor((41 + unlockingBytecodeLength) * 800);
+  (41 + unlockingBytecodeLength) * 800;
 ```
 
 </details>
