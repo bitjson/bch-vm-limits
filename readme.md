@@ -16,7 +16,7 @@ This proposal replaces several poorly-targeted virtual machine (VM) limits with 
 - The 201 operation limit is removed.
 - The 520-byte stack element length limit is raised to 10,000 bytes, a constant equal to the consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE`) prior to this proposal.
 - A new operation cost limit is introduced, limiting contracts to approximately 700 bytes pushed to the stack per spending input byte, with increased costs for hashing, signature checking, and expensive arithmetic operations; constants are derived from the effective limit(s) prior to this proposal.
-- A new hashing limit is introduced, limiting contracts to 3.5 hash digest iterations per spending input byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to 0.5 hash digest iterations per spending input byte, the maximum-known, theoretically-useful hashing density.
+- A new hashing limit is introduced, limiting contracts to approximately 3.5 hash digest iterations per spending input byte, a constant rounded up from the effective standard limit prior to this proposal, and further limiting standard contracts to approximately 0.5 hash digest iterations per spending input byte, the maximum-known, theoretically-useful hashing density.
 - A new control stack limit is introduced, limiting control flow operations (`OP_IF` and `OP_NOTIF`) to a depth of 100, the effective limit prior to this proposal.
 
 This proposal **intentionally avoids modifying other existing properties of the VM**:
@@ -130,11 +130,15 @@ Before a hashing function is performed, its expected cost – in terms of digest
 
 Note that hash digest iterations are cumulative across all evaluation stages: unlocking bytecode, locking bytecode, and redeem bytecode (of P2SH evaluations). This differs from the behavior of the existing operation limit (A.K.A. `nOpCount`), which resets its count to `0` prior to each evaluation stage.
 
+#### Density Control Length
+
+The `Density Control Length` is computed by adding the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
+
 #### Maximum Hashing Density
 
-For standard transactions, the maximum density is approximately `0.5` hash digest iterations per spending input byte; for block validation, the maximum density is approximately `3.5` hash digest iterations per spending input byte. See [Rationale: Selection of Hashing Limit](rationale.md#selection-of-hashing-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
+For standard transactions, the maximum density is `0.5` hash digest iterations per [Density Control Length](#density-control-length) byte; for block validation, the maximum density is `3.5` hash digest iterations per [Density Control Length](#density-control-length) byte. See [Rationale: Selection of Hashing Limit](rationale.md#selection-of-hashing-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
 
-Given the spending input's unlocking bytecode length (A.K.A. `scriptSig`), hash digest iteration limits may be calculated with the following C functions:
+Given the spending input's `unlocking_bytecode_length` (A.K.A. `scriptSig` length), hash digest iteration limits (`0.5` and `3.5`, respectively) may be calculated with the following C functions:
 
 ```c
 int max_standard_iterations (int unlocking_bytecode_length) {
@@ -157,7 +161,7 @@ const maxConsensusIterations = (unlockingBytecodeLength) =>
 
 </details>
 
-Note that this formula does not rely on the precise encoded length of the input; it instead adds the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
+Note that this formula relies on the [Density Control Length](#density-control-length) rather than the precise encoded length of the input. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
 
 #### Digest Iteration Count
 
@@ -214,9 +218,9 @@ These test vectors reflect the required hash digest iterations for a variety of 
 </details>
 
 <details>
-<summary>Note on 64-Byte Message Block Size</summary>
+<summary>Explanation of Digest Iteration Formula</summary>
 
-Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses a [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) with a `block size` of 512 bits (64 bytes), so the number of message blocks/digest iterations required for every message size is equal among all VM-supported hashing functions.
+Each VM-supported hashing algorithm – RIPEMD-160, SHA-1, and SHA-256 – uses a [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) with a 512-bit (64-byte) message block length, so the number of message blocks/digest iterations required for every message length is equal among all VM-supported hashing functions. The specified formula correctly accounts for padding: hashed messages are padded with a `1` bit, followed by enough `0` bits and a 64-bit (8-byte) message length to produce a padded message with a length that is a multiple of 512 bits. Note that even small messages require at least one hash digest iteration, and an additional hash digest iteration is required for each additional 512-bit message block in the padded message.
 
 </details>
 
@@ -260,7 +264,7 @@ Following the removal of the operation limit, both `OP_CHECKMULTISIG` and `OP_CH
 
 ### Operation Cost Limit
 
-An `Operation Cost Limit` is introduced, limiting transaction inputs to a cumulative operation cost of approximately `800` per spending input byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
+An `Operation Cost Limit` is introduced, limiting transaction inputs to a cumulative operation cost of `800` per spending [Density Control Length](#density-control-length) byte. See [Rationale: Selection of Operation Cost Limit](rationale.md#selection-of-operation-cost-limit) and [Rationale: Use of Input-Length Based Densities](rationale.md#use-of-input-length-based-densities).
 
 Given the spending input's unlocking bytecode length (A.K.A. `scriptSig`), the operation cost limit may be calculated with the following C function:
 
@@ -280,7 +284,7 @@ const maxOperationCost = (unlockingBytecodeLength) =>
 
 </details>
 
-Note that this formula does not rely on the precise encoded length of the input; it instead adds the unlocking bytecode length to the constant `41` – the minimum possible per-input overhead of version `1` and `2` transactions. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
+Note that this formula relies on the [Density Control Length](#density-control-length) rather than the precise encoded length of the input. See [Rationale: Selection of Input Length Formula](rationale.md#selection-of-input-length-formula).
 
 For each evaluated instruction (including unexecuted and push operations), operation cost is incremented by `100`. See [Rationale: Selection of Base Instruction Cost](rationale.md#selection-of-base-instruction-cost).
 
