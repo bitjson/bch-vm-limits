@@ -154,9 +154,9 @@ int max_consensus_iterations (int unlocking_bytecode_length) {
 
 ```js
 const maxStandardIterations = (unlockingBytecodeLength) =>
-  Math.floor((41 + unlockingBytecodeLength) / 2);
+  (41n + unlockingBytecodeLength) / 2n;
 const maxConsensusIterations = (unlockingBytecodeLength) =>
-  Math.floor(((41 + unlockingBytecodeLength) * 7) / 2);
+  ((41n + unlockingBytecodeLength) * 7n) / 2n;
 ```
 
 </details>
@@ -182,7 +182,7 @@ Note that the double-hashing operations (`OP_HASH160` and `OP_HASH256`) and all 
 
 ```js
 const digestIterations = (messageLength, isDouble) =>
-  1 + Math.floor((messageLength + 8) / 64) + (isDouble ? 1 : 0);
+  1n + ((messageLength + 8n) / 64n) + (isDouble ? 1n : 0n);
 ```
 
 </details>
@@ -279,7 +279,7 @@ int max_operation_cost (int unlocking_bytecode_length) {
 
 ```js
 const maxOperationCost = (unlockingBytecodeLength) =>
-  Math.floor((41 + unlockingBytecodeLength) * 800);
+  (41n + unlockingBytecodeLength) * 800n;
 ```
 
 </details>
