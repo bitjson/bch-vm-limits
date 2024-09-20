@@ -348,6 +348,7 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
 ### Rationale
 
 - [Appendix: Rationale &rarr;](rationale.md#rationale)
+  - [Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit)
   - [Retention of Control Stack Limit](rationale.md#retention-of-control-stack-limit)
   - [Use of Input Length-Based Densities](rationale.md#use-of-input-length-based-densities)
   - [Selection of Input Length Formula](rationale.md#selection-of-input-length-formula)
