@@ -204,8 +204,8 @@ To independently reproduce the [provided data sets](./benchmarks/) on a new targ
 
 ```sh
 git clone https://gitlab.com/cculianu/bitcoin-cash-node.git
-git checkout wip_new_vmb_bench_vmlimits_bigint
 cd bitcoin-cash-node
+git checkout wip_new_vmb_bench_vmlimits_bigint
 mkdir build
 cd build
 cmake -GNinja .. -DBUILD_BITCOIN_WALLET=OFF -DBUILD_BITCOIN_QT=OFF -DENABLE_NATPMP=OFF -DCMAKE_BUILD_TYPE=Release
