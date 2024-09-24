@@ -1,0 +1,3 @@
+[submodule "vmb_tests"]
+	path = vmb_tests
+	url = https://github.com/bitauth/vmb_tests.git
