@@ -380,6 +380,8 @@ Please see the following reference implementations for additional examples and t
 - JavaScript/TypeScript
   - [Libauth](https://github.com/bitauth/libauth) – An ultra-lightweight, zero-dependency JavaScript library for Bitcoin Cash. [Pull Request #139](https://github.com/bitauth/libauth/pull/139).
   - [Bitauth IDE](https://github.com/bitauth/bitauth-ide) – An online IDE for bitcoin (cash) contracts. [Pull Request #101](https://github.com/bitauth/bitauth-ide/pull/101).
+- Go:
+  - [BCHD](https://bchd.cash/) – An alternative full node bitcoin cash implementation written in Go (golang). [OPReturnCode/bchd PR #1](https://github.com/OPReturnCode/bchd/pull/1)
 
 ## Costs & Risk Assessment
 

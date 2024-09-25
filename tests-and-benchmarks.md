@@ -15,9 +15,6 @@ Six directories of tests are available for each VM corresponding with the modes 
 - **`nonstandard`** – these tests must pass in nonstandard mode but fail in standard mode.
 - **`invalid`** – these tests must fail in both standard and nonstandard mode.
 
-<details>
-<summary>Standard Vs. Nonstandard VMs</summary>
-
 ### Standard Vs. Nonstandard VMs
 
 The Bitcoin Cash virtual machine has two modes: `standard` ([introduced in 2010](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/commit/a206a23980c15cacf39d267c509bd70c23c94bfa)) and `nonstandard` mode.
@@ -31,8 +28,6 @@ This distinction between standard and nonstandard modes offers the network [defe
 For example, it's possible to prepare thousands of UTXOs with nonstandard locking scripts that can be unlocked using very small (non-P2SH) transactions but require unusually excessive resources to validate. If these nonstandard redeem transactions were relayed and automatically accepted by a miner, the miner could inadvertently create an unusually slow-to-validate block. If another block is found before most miners are able to validate the slow-to-validate block, the first miner's hashing power would be wasted (and they would lose mining revenue).
 
 By maintaining this standard/nonstandard distinction, the BCH ecosystem retains the flexibility to experiment with unusual, nonstandard transactions while ensuring such activity is unlikely to negatively impact honest miners or the wider network.
-
-</details>
 
 ### VMB Test Contents
 
@@ -78,7 +73,7 @@ This proposal carefully identifies and measures a variety of existing worst-case
 
 - **Base Instruction Cost** – To further minimize the impact of all possible sub-linear and linear-time implementation defects, this proposal also comprehensively limits the overall density of evaluated (both executed and not executed) instructions, aiming to ensure that operation density following this upgrade increases by less than one order of magnitude. See [Rationale: Selection of Base Instruction Cost](./rationale.md#selection-of-base-instruction-cost).
 
-- **Arithmetic Limits** – This proposal limits both expensive arithmetic operations (`OP_MUL`, `OP_DIV`, and `OP_MOD`) and VM number re-encoding based on the worst-case performance of an un-optimized implementation. This avoids creating additional implementation burdens on most VM implementations, as arithmetic operations can be internally implemented using a wide range of existing big-integer libraries or built-in language features. Of course, as the Bitcoin Cash VM number encoding is specifically designed to efficiently support in-place, arbitrary-precision arithmetic (without significant encoding/decoding cost), highly-optimized implementations will be capable of performance far exceeding the minimal acceptable level. E.g. [worst-case arithmetic in BCHN is ~10x faster](#bitcoin-cash-node-c) than worst-case 1-of-3 bare multisig (the primary performance bottleneck both before and after this proposal).
+- **Arithmetic Limits** – This proposal limits both expensive arithmetic operations (`OP_MUL`, `OP_DIV`, and `OP_MOD`) and VM number re-encoding based on the worst-case performance of an un-optimized implementation. This avoids creating additional implementation burdens on most VM implementations, as arithmetic operations can be internally implemented using a wide range of existing big-integer libraries or built-in language features. Of course, as the Bitcoin Cash VM number encoding is [specifically designed](https://github.com/bitjson/bch-bigint#removal-of-number-length-limit) to efficiently support in-place, high-precision arithmetic (without significant encoding/decoding cost), highly-optimized implementations will be capable of performance far exceeding the minimal acceptable level. E.g. [worst-case arithmetic in BCHN is ~2x faster](#bitcoin-cash-node-c) than worst-case 1-of-3 bare multisig (the primary performance bottleneck both before and after this proposal).
 
 - **Hashing Limits** – Unlike other re-targeted limits, the hashing limits established by this proposal disallow some additional, [provably-malicious cases](./rationale.md#selection-of-hashing-limit) (though all currently-standard transactions remain valid), reducing the worst-case performance in some implementations and [expanding the node performance safety margin](./risk-assessment.md#expanded-node-performance-safety-margin) in hashing-expensive scenarios.
 
@@ -144,6 +139,26 @@ The following worst-case results for each category have been extracted from the 
 | OP_ADD/SUB         | 2xhecr | 85        | 0.243   | 1.046402       | 31980.0 | 31269       | 5.3         | 58825   | 2025     | S       | S       | "OK"   | "Within BCH_2025_05 P2SH/standard, single-input limits, maximize OP_SUB operand bytes (P2SH32)”                                  |
 | MUL/MOD/DIV        | u83yzg | 73        | 0.311   | 1.560590       | 24968.0 | 40051       | 61.4        | 68495   | 2025     | S       | S       | "OK"   | "Within BCH_2025_05 P2SH/standard, single-input limits, maximize 1-byte OP_MOD (1-by-10000 byte) (highest byte set) (P2SH32)”    |
 
+#### 2023 Standard, BCHN, `m1-max` (`ARM`)
+
+| Category           | ID     | TxByteLen | RelCost  | RelCostPerByte | Hz      | AvgTimeNSec | VariancePct | Samples | TestPack | OrigStd | UsedStd | ErrMsg | Description                                                                                                                                   |
+| ------------------ | ------ | --------- | -------- | -------------- | ------- | ----------- | ----------- | ------- | -------- | ------- | ------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Abusive Hashing    | ntcrvp | 99966     | 766.925  | 2.807900       | 9.6     | 104625569   | 36.6        | 50      | 2023     | S       | S       | "OK"   | "Within BCH_2023_05 P2SH20/standard limits, maximize hash digests per byte, then total bytes OP_HASH256 hashed (packed transaction) (P2SH32)" |
+| Signature Checking | l0fhm3 | 99988     | 1434.929 | 5.252471       | 5.1     | 195756159   | 1.0         | 50      | 2023     | S       | N       | "OK"   | "Within BCH_2023_05 standard limits, packed 1-of-3 bare multisig inputs, 1 output (all ECDSA signatures, bottom slot) (nonP2SH)”              |
+| Bitwise Ops        | desctt | 268       | 0.565    | 0.770955       | 12984.7 | 77013       | 16.0        | 18655   | 2023     | S       | N       | "OK"   | "Within BCH_2023_05 P2SH/standard, single-input limits, maximize OP_XOR (trailing OP_DROP) (P2SH32)”                                          |
+| OP_ADD/SUB         | grdrje | 217       | 0.520    | 0.876973       | 14097.8 | 70933       | 19.7        | 23040   | 2023     | S       | S       | "OK"   | "OP_ADD 1-byte number (highest-bit set) and 1-byte number (highest-bit set) (P2SH20)"                                                         |
+| MUL/MOD/DIV        | j44ye2 | 217       | 0.490    | 0.826582       | 14957.2 | 66857       | 6.8         | 23040   | 2023     | S       | N       | "OK"   | "OP_MUL 1-byte number (highest-bit set) and 1-byte number (highest-bit set) (P2SH32)"                                                         |
+
+#### 2025 Standard, BCHN, `m1-max` (`ARM`)
+
+| Category           | ID     | TxByteLen | RelCost  | RelCostPerByte | Hz      | AvgTimeNSec | VariancePct | Samples | TestPack | OrigStd | UsedStd | ErrMsg | Description                                                                                                                      |
+| ------------------ | ------ | --------- | -------- | -------------- | ------- | ----------- | ----------- | ------- | -------- | ------- | ------- | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Abusive Hashing    | r3axym | 68        | 0.080    | 0.433018       | 90044.1 | 11105       | 6.4         | 73530   | 2025     | S       | N       | "OK"   | "OP_SHA256 hash 1399 bytes (P2SH32)"                                                                                             |
+| Signature Checking | l0fhm3 | 99988     | 1356.540 | 4.965531       | 5.3     | 187259437   | 1.5         | 50      | 2025     | S       | S       | "OK"   | "Within BCH_2023_05 standard limits, packed 1-of-3 bare multisig inputs, 1 output (all ECDSA signatures, bottom slot) (nonP2SH)” |
+| Bitwise Ops        | 4wm0d3 | 69        | 0.388    | 2.058797       | 18664.1 | 53578       | 67.9        | 72465   | 2025     | S       | N       | "OK"   | "Within BCH_2025_05 P2SH/standard, single-input limits, maximize OP_AND (P2SH20)”                                                |
+| OP_ADD/SUB         | 09macl | 183       | 0.895    | 1.789342       | 8097.0  | 123502      | 1.1         | 27320   | 2025     | S       | N       | "OK"   | "Within BCH_2025_05 P2SH20/standard, single-input limits, balance (OP_DUP OP_CAT) OP_ADD density and operand bytes (P2SH20)”     |
+| MUL/MOD/DIV        | wx3f79 | 73        | 0.414    | 2.077059       | 17486.3 | 57187       | 155.1       | 68495   | 2025     | S       | S       | "OK"   | "Within BCH_2025_05 P2SH/standard, single-input limits, maximize 1-byte OP_MOD (1-by-10000 byte) (highest byte set) (P2SH20)”    |
+
 </details>
 
 Further, block validation CPU requirements are reduced by approximately `50%`:
@@ -196,6 +211,26 @@ The following worst-case results for each category have been extracted from the 
 | OP_ADD/SUB         | nevxwn | 1315      | 23.906  | 6.653588       | 325.1   | 3075997     | 41.1        | 3800    | 2025     | N       | S       | "OK"                                                                               | "Within BCH_2025_05 nonP2SH/nonstandard, single-input limits, maximize control stack and stack usage checking (OP_NOTIF, OP_1ADD) (nonP2SH)" |
 | MUL/MOD/DIV        | snngzt | 65        | 0.615   | 3.462931       | 12636.8 | 79133       | 48.0        | 76925   | 2025     | N       | N       | "OK"                                                                               | "Within BCH_2023_05 P2SH/standard, single-input limits, maximize OP_MUL (nonP2SH)”                                                           |
 
+#### 2023 Nonstandard, BCHN, `m1-max` (`ARM`)
+
+| Category           | ID     | TxByteLen | RelCost | RelCostPerByte | Hz      | AvgTimeNSec | VariancePct | Samples | TestPack | OrigStd | UsedStd | ErrMsg | Description                                                                                                 |
+| ------------------ | ------ | --------- | ------- | -------------- | ------- | ----------- | ----------- | ------- | -------- | ------- | ------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| Abusive Hashing    | vdqk6h | 65        | 3.074   | 17.309064      | 2384.6  | 419363      | 2.6         | 76925   | 2023     | N       | N       | "OK"   | "Within BCH_2023_05 nonP2SH/nonstandard, single-input limits, maximize bytes OP_HASH256 hashed (nonP2SH)"   |
+| Signature Checking | ux6mm3 | 358       | 11.557  | 11.815619      | 634.2   | 1576679     | 1.3         | 13965   | 2023     | N       | N       | "OK"   | "2-of-20 multisig with checkBits of zero (ECDSA, key 1 and key 13) (nonP2SH)"                               |
+| Bitwise Ops        | 372ztm | 68        | 0.533   | 2.867472       | 13759.0 | 72679       | 5.7         | 73530   | 2023     | N       | S       | "OK"   | "Within BCH_2023_05 nonP2SH/nonstandard, single-input limits, maximize OP_XOR (trailing OP_DROP) (nonP2SH)” |
+| OP_ADD/SUB         | u33zrd | 67        | 0.235   | 1.282920       | 31212.0 | 32038       | 4.5         | 74625   | 2023     | N       | N       | "OK"   | "Within BCH_2023_05 nonP2SH/nonstandard, single-input limits, maximize OP_ADD (nonP2SH)”                    |
+| MUL/MOD/DIV        | snngzt | 65        | 0.262   | 1.475618       | 27971.1 | 35751       | 18.7        | 76925   | 2023     | N       | S       | "OK"   | "Within BCH_2023_05 P2SH/standard, single-input limits, maximize OP_MUL (nonP2SH)”                          |
+
+#### 2025 Nonstandard, BCHN, `m1-max` (`ARM`)
+
+| Category           | ID     | TxByteLen | RelCost | RelCostPerByte | Hz      | AvgTimeNSec | VariancePct | Samples | TestPack | OrigStd | UsedStd | ErrMsg                                                                             | Description                                                                                                                                  |
+| ------------------ | ------ | --------- | ------- | -------------- | ------- | ----------- | ----------- | ------- | -------- | ------- | ------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Abusive Hashing    | 0j2276 | 65        | 0.515   | 2.899988       | 14065.7 | 71095       | 1.9         | 76925   | 2025     | I       | S       | "VM cost limit exceeded"                                                           | "OP_HASH256 hash 10000 bytes (nonP2SH)"                                                                                                      |
+| Signature Checking | c7ykrf | 358       | 11.010  | 11.256467      | 657.9   | 1519900     | 1.6         | 13965   | 2025     | I       | S       | "Signature must be zero for failed CHECK(MULTI)SIG operation"                      | "2-of-20 multisig with checkBits of zero (ECDSA, key 13 and key 13) (nonP2SH)"                                                               |
+| Bitwise Ops        | ss9tws | 65        | 0.332   | 1.871383       | 21796.9 | 45878       | 4.7         | 76925   | 2025     | I       | S       | "Script evaluated without error but finished with a false/empty top stack element" | "Within BCH_2025_05 P2SH/standard, single-input limits, maximize OP_XOR (nonP2SH)”                                                           |
+| OP_ADD/SUB         | nevxwn | 1315      | 35.621  | 9.914354       | 203.4   | 4917227     | 1.9         | 3800    | 2025     | N       | S       | "OK"                                                                               | "Within BCH_2025_05 nonP2SH/nonstandard, single-input limits, maximize control stack and stack usage checking (OP_NOTIF, OP_1ADD) (nonP2SH)" |
+| MUL/MOD/DIV        | snngzt | 65        | 0.739   | 4.162065       | 9800.5  | 102035      | 1.3         | 76925   | 2025     | N       | N       | "OK"                                                                               | "Within BCH_2023_05 P2SH/standard, single-input limits, maximize OP_MUL (nonP2SH)”                                                           |
+
 </details>
 
 ### Verification
@@ -223,11 +258,11 @@ The benchmarking executable will measure the performance of accepting or rejecti
 
 [Libauth](https://github.com/bitauth/libauth) is a popular TypeScript/JavaScript software development library for Bitcoin Cash. Libauth's Bitcoin Cash virtual machine implementations are designed to power interactive development tooling for Bitcoin Cash contract developers.
 
-Libauth VMs must be sufficiently performant to avoid excessive resource consumption given a single abusive contract, e.g. if a developer opens a document with an intentionally malicious contract, the editing application does not lag or freeze. However, Libauth VMs are not currently employed in strongly-adversarial environments like fully-validating nodes (subject to flooding attacks).
+Libauth VMs must be sufficiently performant to avoid excessive resource consumption given a single abusive contract, e.g. if a developer opens a document with an intentionally malicious contract, the editing application does not lag or freeze. However, Libauth VMs are not currently employed in strongly-adversarial environments like fully-validating nodes (subject to flooding attacks). This security posture makes Libauth an ideal candidate for evaluating the impact of the proposed changes on unusual, non-node use cases of the Bitcoin Cash VM design.
 
-Overall, the proposed changes approximately double the worst-case cost of debugging a malicious contract. Note that the Libauth project has publish [an explanation for the slowest performing benchmarks](https://github.com/bitauth/libauth/issues/145) attributing ~75% of total CPU activity to excessive object creation and garbage collection.
+Libauth duplicates significant quantities of data for each evaluated contract operation, exposing the data in interactive development experiences. As [explained by the project](https://github.com/bitauth/libauth/issues/145), excessive object creation and garbage collection account for ~75% of total CPU activity during worst case evaluations. However, because this proposal carefully [limits the potential increase in operation density](./rationale.md#selection-of-base-instruction-cost), the re-targeted limits result in only a `2x` increase in worst case performance, and the project does not consider VM performance to be a target for further optimization.
 
-![Contract-Debugging VM Performance (Developer Tooling)](./benchmarks/libauth-results.png)
+![Copy-on-Write, Contract-Debugging VM Performance (for Web Browser-Based Developer Tooling)](./benchmarks/libauth-results.png)
 
 ### Verification
 
