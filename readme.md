@@ -6,8 +6,8 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-08-28
-        Version: 3.1.0
+        Latest Revision Date: 2024-09-24
+        Version: 3.1.1
 
 ## Summary
 
@@ -182,7 +182,7 @@ Note that the double-hashing operations (`OP_HASH160` and `OP_HASH256`) and all 
 
 ```js
 const digestIterations = (messageLength, isDouble) =>
-  1n + ((messageLength + 8n) / 64n) + (isDouble ? 1n : 0n);
+  1n + (messageLength + 8n) / 64n + (isDouble ? 1n : 0n);
 ```
 
 </details>
@@ -348,13 +348,18 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
 ### Rationale
 
 - [Appendix: Rationale &rarr;](rationale.md#rationale)
-  - [Retention of Control Stack Limit](rationale.md#retention-of-control-stack-limit)
+  - [Use of Explicitly-Defined Density Limits](rationale.md#use-of-explicitly-defined-density-limits)
+  - [Exclusion of "Gas System" Behaviors](rationale.md#exclusion-of-gas-system-behaviors)
+    - [Global-State Validation Architectures](rationale.md#global-state-validation-architectures)
+    - [Stateless Validation Architecture](rationale.md#stateless-validation-architecture)
+    - [Minimal Impact of Compute on Node Operation Costs](rationale.md#minimal-impact-of-compute-on-node-operation-costs)
+  - [Retention of Control Stack Limit](#retention-of-control-stack-limit)
   - [Use of Input Length-Based Densities](rationale.md#use-of-input-length-based-densities)
   - [Selection of Input Length Formula](rationale.md#selection-of-input-length-formula)
   - [Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations)
-  - [Selection of Hashing Limit](rationale.md#selection-of-hashing-limit)
+  - [Selection of Hashing Limit](#selection-of-hashing-limit)
   - [Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit)
-    - [Ongoing Value of `OP_CODESEPARATOR` Operation](rationale.md#ongoing-value-of-op_codeseparator-operation)
+    - [Ongoing Value of OP_CODESEPARATOR Operation](rationale.md#ongoing-value-of-op_codeseparator-operation)
   - [Increased Usability of Multisig Stack Clearing](rationale.md#increased-usability-of-multisig-stack-clearing)
   - [Limitation of Pushed Bytes](rationale.md#limitation-of-pushed-bytes)
   - [Unification of Limits into Operation Cost](rationale.md#unification-of-limits-into-operation-cost)
@@ -379,10 +384,58 @@ Please see the following reference implementations for additional examples and t
 - JavaScript/TypeScript
   - [Libauth](https://github.com/bitauth/libauth) – An ultra-lightweight, zero-dependency JavaScript library for Bitcoin Cash. [Pull Request #139](https://github.com/bitauth/libauth/pull/139).
   - [Bitauth IDE](https://github.com/bitauth/bitauth-ide) – An online IDE for bitcoin (cash) contracts. [Pull Request #101](https://github.com/bitauth/bitauth-ide/pull/101).
+- Go:
+  - [BCHD](https://bchd.cash/) – An alternative full node bitcoin cash implementation written in Go (golang). [OPReturnCode/bchd PR #1](https://github.com/OPReturnCode/bchd/pull/1)
+
+## Evaluations of Alternatives
+
+This proposal comprehensively evaluates notable alternatives for each design decision made in the technical specification. Reviewed alternatives are enumerated here for ease of review:
+
+- **Statically-Defined, Per-Input Limits** – Rather than this proposal's explicitly-specified limits, an alternative limits system could attempt to indirectly limit worst-case validation costs by specifying fixed per-input constant limits. This alternative would 1) create a minimum of ~244x variability in worst-case validation costs and 2) obfuscate the true limits such that worst-case costs are not predictable without exhaustive enumeration of optimally-packed attack cases. See [Rationale: Use of Explicitly-Defined Density Limits](./rationale.md#use-of-explicitly-defined-density-limits) and [Rationale: Use of Density-Based Limits](./rationale.md#use-of-density-based-limits) for details.
+
+- **Financial Limitation of Computation (e.g. a "Gas" System)** – This proposal does not attempt to introduce a separate "Gas" system of pricing on computation because Bitcoin Cash already has a many orders-of-magnitude scalability advantage over global-state systems like Ethereum. Beyond preventing denial-of-service risks, Bitcoin Cash has no pressing need to measure or charge fees for computation. See [Rationale: Exclusion of "Gas System" Behaviors](./rationale.md#exclusion-of-gas-system-behaviors).
+
+- **Unbounded or Contract-Length Bounded Control Stack Depth** – This proposal preserves the existing practical limit on Control Stack depth. Alternatively, this proposal could increase or remove this limit, requiring all implementations to carefully implement a particular optimization and potentially complicating future upgrades. See [Rationale: Retention of Control Stack Limit](./rationale.md#retention-of-control-stack-limit).
+
+- **Transaction Length Based Densities** – Rather than basing density limits on input length, the density limit could be shared across the entire transaction. While safely allowing for higher limits in some cases, this approach would prevent contract authors from reliably predicting available limits in some cases, increase protocol complexity of parallelized validation, and increase the worst-case performance of maliciously-invalid transactions. See [Rationale: Use of Density-Based Limits](./rationale.md#use-of-density-based-limits) for details.
+
+- **UTXO Length Addition to Density Control Length** – In addition to the computation limits afforded to contracts by this proposal, further allowance could be made based on the byte-length of the spent UTXO. However, this would increase the volatility of worst-case transaction validation and potentially incentivize would-be attackers to prepare attacks by first inflating the UTXO set. See [Rationale: Use of Density-Based Limits](./rationale.md#use-of-density-based-limits) for details.
+
+- **Encoded Input Length Based Densities** – This proposal avoids tightly associating precise encoding semantics with the limit system by using an always-safe constant (`41`) rather than requiring implementations to measure or calculate the expected encoded length of inputs, simplifying implementations and eliminating a potential pitfall for contract developers. See [Rationale: Selection of Input Length Formula](./rationale.md#selection-of-input-length-formula).
+
+- **Byte-Length Based Hashing Limits** – This proposal carefully limits hashing based on the internal number of hash digest iterations performed rather than a more naive, byte count-based limit, preventing an up to 55x magnification in worst-case validation costs. See [Rationale: Hashing Limit by Digest Iterations](./rationale.md#hashing-limit-by-digest-iterations).
+
+- **Consensus-Only Hashing Limit** – This proposal establishes a lower, standard hashing limit at the asymptotic maximum density of hashing operations in plausibly non-malicious, standard transactions. While this standardness limit could be omitted, its inclusion improves the worst-case performance of Bitcoin Cash transaction and block validation by nearly an order of magnitude. See [Rationale: Selection of Hashing Limit](/rationale.md#selection-of-hashing-limit).
+
+- **Internal Hashing Limits Within Signing Serializations** – Alternatively, this proposal could also require internally accounting for the cost of hashing within signing serialization components. However, such costs would need to be amortized across all of a transaction's signature checks to approximate their fixed, real-world cost. This would needlessly increasing protocol complexity, given both the ease of component caching and the presence of other limits on signature checking. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](./rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
+
+- **Additional Limitations on `OP_CODESEPARATOR`** – If this proposal were to omit hashing limitations on signing serializations, additional limitations would be required to prevent abuse of `OP_CODESEPARATOR`. As `OP_CODESEPARATOR` remains useful, additional limitations would increase overall protocol complexity, and limitation of signing serialization hashing is otherwise prudent, this proposal instead avoid singling-out `OP_CODESEPARATOR` for special limitation. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](./rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
+
+- **Additional Limitations on `OP_CHECKMULTISIG*`** – Because operation count currently limits the eccentric use of `OP_CHECKMULTISIG` for stack-dropping behavior, this proposal could attempt to place new restrictions on `OP_CHECKMULTISIG` to prevent expanded usage. However, because the unusual feature has been available to contract authors since Bitcoin Cash's 2009 launch, remains useful, and does not impact validation costs, this proposal does not attempt to apply new limitations for this case. See [Increased Usability of Multisig Stack Clearing](./rationale.md#increased-usability-of-multisig-stack-clearing).
+
+- **Continuous Tracking of Total Stack Usage** – Instead of simply tracking total stack-pushed bytes, this proposal could limit memory usage by continuously tracking total usage and enforcing some maximum limit. However, this would increase implementation complexity, only implicitly limit memory bandwidth usage, and require additional limitations on linear-time operations. See [Rationale: Limitation of Pushed Bytes](./rationale.md#limitation-of-pushed-bytes).
+
+- **Omit Base Instruction Cost** – this proposal could alternatively omit Base Instruction Cost, limiting the cost of all instructions to their impact on the stack. However, instruction evaluation is not costless – a nonzero base cost properly accounts for the real world overhead of evaluating an instruction and verifying non-violation of applicable limits. See [Rationale: Selection of Base Instruction Cost](./rationale.md#selection-of-base-instruction-cost).
+
+- **Omit Numeric Encoding Cost** – this proposal could alternatively omit the cost of numeric encoding from [arithmetic operation cost](#arithmetic-operation-cost). However, if this proposal were to assume zero operation cost for encoding/decoding, this optimization would be required of all performance-critical VM implementations to avoid divergence of real performance from measured operation cost. See [Rationale: Inclusion of Numeric Encoding in Operation Costs](./rationale.md#inclusion-of-numeric-encoding-in-operation-costs).
+
+## Risk Assessment
+
+- [Appendix: Risk Assessment &rarr;](risk-assessment.md#risk-assessment)
+  - [Risks \& Security Considerations](risk-assessment.md#risks--security-considerations)
+    - [User Impact Risks](risk-assessment.md#user-impact-risks)
+      - [Reduced or Equivalent Node Validation Costs](risk-assessment.md#reduced-or-equivalent-node-validation-costs)
+      - [Increased or Equivalent Contract Capabilities](risk-assessment.md#increased-or-equivalent-contract-capabilities)
+    - [Consensus Risks](risk-assessment.md#consensus-risks)
+      - [Full-Transaction Test Vectors](risk-assessment.md#full-transaction-test-vectors)
+      - [New Performance Testing Methodology](risk-assessment.md#new-performance-testing-methodology)
+      - [`Chipnet` Preview Activation](risk-assessment.md#chipnet-preview-activation)
+    - [Denial-of-Service (DoS) Risks](risk-assessment.md#denial-of-service-dos-risks)
+      - [Expanded Node Performance Safety Margin](risk-assessment.md#expanded-node-performance-safety-margin)
 
 ## Stakeholders & Statements
 
-(Pending reviews.)
+[Stakeholder Responses & Statements &rarr;](stakeholders.md)
 
 ## Feedback & Reviews
 
@@ -393,7 +446,13 @@ Please see the following reference implementations for additional examples and t
 
 This section summarizes the evolution of this document.
 
-- **v3.1.0**
+- **v3.1.1**
+  - Add [overview of benchmarking process and results](./tests-and-benchmarks.md)
+  - Add [Risk Assessment](./risk-assessment.md)
+  - Add latest test vectors and benchmarks ([#7](https://github.com/bitjson/bch-vm-limits/issues/7))
+  - Add [Rationale: Use of Explicitly-Defined Density Limits](./rationale.md#use-of-explicitly-defined-density-limits) ([#28](https://github.com/bitjson/bch-vm-limits/issues/28))
+  - Clarify explanation of hash digest iteration formula ([#29](https://github.com/bitjson/bch-vm-limits/issues/29))
+- **v3.1.0** ([`35dc2c52`](https://github.com/bitjson/bch-vm-limits/commit/35dc2c5210bb34dc5255c0613a6665edff07d6c0))
   - Base densities on input length rather than transaction length ([#21](https://github.com/bitjson/bch-vm-limits/issues/21))
   - Include numeric encoding in operation costs ([#20](https://github.com/bitjson/bch-vm-limits/issues/20))
 - **v3.0.1** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))

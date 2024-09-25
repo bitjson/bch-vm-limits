@@ -2,6 +2,60 @@
 
 This section documents design decisions made in this specification.
 
+### Use of Explicitly-Defined Density Limits
+
+This proposal defines explicit limits on the overall density of computation required to validate both transactions and blocks, particularly of [arithmetic](./readme.md#arithmetic-operation-cost), [hashing](./readme.md#hashing-limit), and [signature checking](./readme.md#signature-checking-operation-cost) computations. These explicit limits predictably cap the worst-case cost of validating transactions and blocks across all possible contract constructions and transaction-packing schemes (see [Rationale: Use of Input Length-Based Densities](#use-of-input-length-based-densities) for details).
+
+Alternatively, this proposal could continue to indirectly limit the worst-case validation costs of transactions and blocks by specifying a system of one or more constant limits applied at various stages of VM evaluation. At best, such **statically-defined, per-input limit schemes** obfuscate the true limits: determining the real-world, worst-case validation performance of such schemes requires exhaustive enumeration of optimally-packed attack cases. Worse, the precise construction of worst-case attacks becomes significant to real world node performance requirements; any contract construction discovery or network upgrade which reduces contract lengths can magnify an unpredictable set of worst case attacks: e.g. more abusive transactions may be packed into abusive blocks, more abusive inputs may be packed into abusive transactions, fewer abusive transactions are required to exhaust a node's compute capacity, etc.
+
+Finally, because statically-defined, per-input limit schemes fundamentally apply the same limits to 41-byte inputs as they apply to 10,000-byte inputs, the baseline variability of compute requirements ranges from `1` to `243.90` times the worst-case result of any statically-defined system (again, determinable only via exhaustive enumeration)<sup>1</sup>. In practice, this means that some non-malicious contracts (real users) will be limited – ostensibly to protect the network from abusive use of computation during transaction validation – after using less than 1% of the net computation afforded to intentionally-malicious contracts<sup>2</sup>.
+
+<details>
+
+<summary>Notes</summary>
+
+1. `10000 / 41 = 243.902439...`
+2. `1 / (10000 / 41) = 0.41%`
+
+</details>
+
+### Exclusion of "Gas System" Behaviors
+
+This proposal preserves the Bitcoin Cash network's highly-scalable, **stateless validation architecture**. Bitcoin Cash contract validation remains stateless and cacheable:
+
+1. Contracts can be verified using only data derived from spent UTXOs and the transaction itself,
+2. A successful contract validation result can be safely cached without later re-validation, and
+3. All invalid transactions can be quickly rejected/discarded, with minimal computation requirements for network nodes.
+
+#### Global-State Validation Architectures
+
+The **global-state transaction validation architecture** of other, similarly-capable virtual machines – like the Ethereum Virtual Machine (EVM) – architecturally-prevent those systems from achieving the scalability of Bitcoin Cash:
+
+1. Contracts can reference data derived from unrelated network state,
+2. Contract evaluations cannot be safely cached – all global transactions must be re-validated in the precise order selected by each new block's miner/validator, and
+3. Invalid transactions – both intentionally-abusive and unintentionally-invalid transactions (e.g. honest users underestimating "gas" fees) – exact an orders-of-magnitude greater computation cost on all network node operators than the equivalent cost on Bitcoin Cash network node operators.
+
+In these less efficient validation architectures, maintaining acceptable transaction throughput performance requires both significant development effort and user-facing structural changes, like EVM's pay-per-compute, "gas" regime. With such gas systems, all structurally-valid transactions (even transaction which fail validation by unintentionally exceeding the allotted virtual-compute time purchased by the "gas" fee paid) are at least partially validated and included in the next block – regardless of whether or not the end user intended for their transaction to fail. This leads to:
+
+1. **Poor user experiences** – users are forced to accept real-world financial losses for the unpredictability of gas fee markets and/or the technical failures of the network, nodes, contracts, and/or wallet systems.
+2. **Financial limitation of contract capabilities** – because the per-computation impact on the entire network of contracts is thousands of higher than on scalable architectures like Bitcoin Cash, global-state systems are forced to charge a meaningful price for each additional computation. In many cases, this regime is so inefficient that it guides contract development away from algorithms which are more correct or provide better user experiences, and toward algorithms which are inexpensive to execute in the networks' virtual-compute pricing ("gas") system. Notably, the connection between virtual-compute pricing and real world performance is tenuous, with the real-world performance differences between various computations sometimes deviating from their charged "gas" prices by greater than an order of magnitude. The dominance of constant-product market makers (CPMMs) are an observable result of this phenomenon, despite other known constructions being superior for certain use cases (e.g. logarithmic market scoring rules).
+
+#### Stateless Validation Architecture
+
+In contrast, this proposal preserves the superior user experience and scalability of Bitcoin Cash:
+
+1. **Reliable user experience** – users never pay for un-mined, "failed" transactions, user transactions cannot be re-ordered by miners without user consent (via deliberate participation in reorder-able contract schemes), and unconfirmed transactions can be chained such that earlier transactions are guaranteed to be mined if a later transaction in the chain is mined (enabling additional miner-abuse resistance and censorship-resistance strategies).
+2. **No-fee contract deployment and superior real-world privacy** – User wallets both “deploy” and “destroy” contracts incrementally as part of their usage, rather than calling monolithic, expensive-to-deploy, "global" contracts – improving both overall network throughput and real-world privacy.
+3. **Reliably-low fees, even for complex contracts** – The per-computation contract validation costs for Bitcoin Cash node operators are thousands of times lower than such costs for node operators in global-state architectures (like Ethereum); existing limits already offer significantly more computation to most Bitcoin Cash contracts than are available to contracts on global-state systems.
+
+#### Minimal Impact of Compute on Node Operation Costs
+
+In practice, computation costs of node operators are typically bounded for a given capacity, and actual utilization of computation has a relatively smaller impact on overall costs (e.g. electricity usage for a single system moving from 5% to 25% utilization). On the other hand, bandwidth and storage more commonly incur direct usage-based costs, with bandwidth commonly cited as the leading infrastructure cost of operation, followed by storage costs of increasing blockchain sizes (e.g. for archival nodes, indexers, and other Bitcoin Cash businesses and infrastructure operators).
+
+Beyond preventing abusive contract constructions from creating denial-of-service risks to node operators by using orders of magnitude more computation than plausibly non-malicious contracts (see [Selection of Hashing Limit](#selection-of-hashing-limit) and [Risk Assessment: Denial of Service Risks](./risk-assessment.md#denial-of-service-dos-risks)) – Bitcoin Cash has no pressing need to measure computation in order to charge differing fees based on computation.
+
+By design, this proposal reduces the overall worst-case computation costs of node operation, while significantly extending the universe of relatively inexpensive-to-validate contract constructions available to Bitcoin Cash contract developers. Further changes which might increase worst-case validation costs – like pay-for-compute schemes – are considered out-of-scope for this proposal (see [Use of Input Length-Based Densities](#use-of-input-length-based-densities) for details).
+
 ### Retention of Control Stack Limit
 
 This proposal avoids modifying the existing practical limit on control stack depth by introducing a specific `Control Stack Limit` in place of the current effective limit<sup>1</sup>.
@@ -26,11 +80,11 @@ Alternatively, this proposal could measure densities relative to the byte length
 
 However, this proposal's input-based approach is superior in that it: 1) allows contract authors to reliably predict a contract's available limits regardless of the size and other contents of the spending transaction, 2) ensures that contract evaluations which do not exceed VM limits can be composed together in multi-input transactions without further regard for VM limits, 3) preserves the simplicity of parallelizing input validation without cross-thread communication, 4) more conservatively limits the worst-case validation performance of maliciously-invalid transactions (by failing the malicious transaction earlier), and 5) could be safely expanded into a transaction-based approach by a future upgrade if necessary.
 
-Another alternative to offer greater limits to non-P2SH contracts would be to base densities on the byte length of both locking and unlocking bytecode, i.e. including the Unspent Transaction Output (UTXO) in the input's budget. However, this alternative approach would increase the volatility of worst-case transaction validation performance: the price of the UTXO's past bandwidth is paid by the previous transaction's mining fee, while the price of the UTXO's storage is paid only by the time-value of associated dust; if compute resources aren't strictly tied to costs in the present (like the current transaction's mining fee), the instantaneous computation requirements of transaction validation are not bound (e.g. by slow-to-validate UTXOs may be stored up and evaluated in a smaller number of attack transactions). Instead, this proposal bases computation limits only on costs paid in the present, with the 41-byte minimum input length providing a reasonable minimum computation budgets.
+Another alternative to offer greater limits to non-P2SH contracts would be to base densities on the byte length of both locking and unlocking bytecode, i.e. including the Unspent Transaction Output (UTXO) in the input's budget. However, this alternative approach would increase the volatility of worst-case transaction validation performance: the price of the UTXO's past bandwidth is paid by the previous transaction's mining fee, while the price of the UTXO's storage is paid only by the time-value of associated dust; if compute resources aren't strictly tied to costs in the present (like the current transaction's mining fee), the instantaneous computation requirements of transaction validation are also not bounded by limits in the present (e.g. slow-to-validate UTXOs may be stored up and evaluated in a smaller number of attack transactions). Finally, depending on the precise economics of particular attacks, limits enhanced by UTXO length may incentivize would-be attackers to inflate the UTXO set in advance of an attempted denial-of-service attack, increasing its cost-effectiveness. Instead, this proposal bases computation limits only on costs paid in the present, with the 41-byte minimum input length providing a reasonable minimum computation budget.
 
-Finally, this proposal could also increase the operation cost limit proportionally to the per-byte mining fee paid, e.g. for fee rates of `2` satoshis-per-byte, the VM could allow a per-byte budget of `2000` (a `2.5` multiple, incentivizing contracts to pay the higher fee rate rather than simply padding the unlocking bytecode length). However, any allowed increase in per-byte operation cost also equivalently changes the variability of per-byte worst-case transaction validation time; such flexibility would need to be conservatively capped and/or interact with the block size limit to ensure predictability of transaction and block validation requirements. Additionally, future research based on real-world usage may support simpler alternatives, e.g. a one-time increase in the per-byte operation cost budget.
+Finally, this proposal could also increase the operation cost limit proportionally to the per-byte mining fee paid or based on the [declaration of "virtual" bytes](https://bitcoincashresearch.org/t/chip-2021-05-targeted-virtual-machine-limits/437/108), e.g. for fee rates of `2` satoshis-per-real-byte, the VM could allow a per-byte budget of `2000` (a `2.5` multiple, incentivizing contracts to pay the higher fee rate rather than simply padding the unlocking bytecode length). However, any allowed increase in per-real-byte operation cost also equivalently changes the variability of per-byte worst-case transaction validation time; such flexibility would need to be conservatively capped and/or interact with the block size limit to ensure predictability of transaction and block validation requirements. Additionally, future research based on real-world usage may support simpler alternatives, e.g. a one-time increase in the per-byte operation cost budget.
 
-As this proposal attempts to avoid any impact to worst-case validation time – and future upgrades can safely deploy increases in operation cost limits – solutions for increasing operation cost limits are considered out of this proposal's scope.
+As is currently required within the existing system of limits, contract systems requiring additional computation following activation of this proposal may continue to rearrange or [break up expensive computations into multiple inputs](https://bitcoincashresearch.org/t/chip-2021-05-targeted-virtual-machine-limits/437/6). As this proposal attempts to avoid any impact to worst-case validation time – and future upgrades can safely deploy increases in operation cost limits – additional solutions for increasing per-input operation cost limits are considered out of this proposal's scope.
 
 ### Selection of Input Length Formula
 
@@ -49,6 +103,8 @@ Additionally, by avoiding direct use of encoded input length in limit calculatio
 ### Hashing Limit by Digest Iterations
 
 One possible alternative to the proposed [Hashing Limit](readme.md#hashing-limit) design is to limit evaluations to a fixed count of "bytes hashed" (rather than digest iterations). While this seems simpler, it performs poorly in an adversarial environment: an attacker can choose message sizes to minimize bytes hashed while maximizing digest iterations required (e.g. 1-byte messages).
+
+In practice, because the cost of hashing a 55-byte message is equivalent to the cost of hashing a single-byte message, any hashing limit which fails to account for the internal block-digest behavior of the [Merkle–Damgård](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction) hashing algorithm will be vulnerable to a 55x magnification in worst-case validation costs (see [Digest Iteration Count](./readme.md#digest-iteration-count)).
 
 By directly measuring digest iterations, non-malicious contracts can be allowed to evaluate a higher density of hashing operations without increasing the worst-case validation requirements of the VM as it existed prior to this proposal.
 
@@ -99,7 +155,7 @@ While this eccentric behavior was likely unintentional, it has been available to
 
 This proposal limits the density of both memory usage and computation by limiting bytes pushed to the stack to approximately `700` per spending input byte (the per-byte budget of `800` minus the base instruction cost of `100`).
 
-Because stack-pushed bytes become inputs to other operations, limiting the overall density of pushed bytes is the most comprehensive method of limiting all sub-linear and linear-time operations (bitwise operations, VM number decoding, `OP_DUP`, `OP_EQUAL`, `OP_REVERSEBYTES`, etc.); this approach increases safety by ensuring that any source of linear time complexity in any operation (e.g. due to a defect in a particular VM implementation) cannot create practically-exploitable performance issues (providing [defense in depth](<https://en.wikipedia.org/wiki/Defense_in_depth_(computing)>)) and reduces protocol complexity by avoiding special accounting for all but the most expensive operations (arithmetic, hashing, and signature checking).
+Because stack-pushed bytes become inputs to other operations, limiting the overall density of pushed bytes is the most comprehensive method of limiting all sub-linear and linear-time operations (bitwise operations, VM number decoding, `OP_DUP`, `OP_EQUAL`, `OP_REVERSEBYTES`, etc.); this approach increases safety by reducing the risk that any unexpected source of linear time complexity (e.g. due to a defect in a particular VM implementation) might create practically-exploitable performance issues (providing [defense in depth](<https://en.wikipedia.org/wiki/Defense_in_depth_(computing)>)) and reduces protocol complexity by avoiding special accounting for all but the most expensive operations (arithmetic, hashing, and signature checking).
 
 Additionally, this proposal’s density-based limit caps the maximum memory and memory bandwidth requirements of validating a large stream of transactions, regardless of the number of parallel validations being performed<sup>1</sup>.
 
