@@ -348,14 +348,18 @@ A similar notice also appeared in [CHIP-2021-03: Bigger Script Integers](https:/
 ### Rationale
 
 - [Appendix: Rationale &rarr;](rationale.md#rationale)
-  - [Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit)
-  - [Retention of Control Stack Limit](rationale.md#retention-of-control-stack-limit)
+  - [Use of Explicitly-Defined Density Limits](rationale.md#use-of-explicitly-defined-density-limits)
+  - [Exclusion of "Gas System" Behaviors](rationale.md#exclusion-of-gas-system-behaviors)
+    - [Global-State Validation Architectures](rationale.md#global-state-validation-architectures)
+    - [Stateless Validation Architecture](rationale.md#stateless-validation-architecture)
+    - [Minimal Impact of Compute on Node Operation Costs](rationale.md#minimal-impact-of-compute-on-node-operation-costs)
+  - [Retention of Control Stack Limit](#retention-of-control-stack-limit)
   - [Use of Input Length-Based Densities](rationale.md#use-of-input-length-based-densities)
   - [Selection of Input Length Formula](rationale.md#selection-of-input-length-formula)
   - [Hashing Limit by Digest Iterations](rationale.md#hashing-limit-by-digest-iterations)
-  - [Selection of Hashing Limit](rationale.md#selection-of-hashing-limit)
+  - [Selection of Hashing Limit](#selection-of-hashing-limit)
   - [Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit)
-    - [Ongoing Value of `OP_CODESEPARATOR` Operation](rationale.md#ongoing-value-of-op_codeseparator-operation)
+    - [Ongoing Value of OP_CODESEPARATOR Operation](rationale.md#ongoing-value-of-op_codeseparator-operation)
   - [Increased Usability of Multisig Stack Clearing](rationale.md#increased-usability-of-multisig-stack-clearing)
   - [Limitation of Pushed Bytes](rationale.md#limitation-of-pushed-bytes)
   - [Unification of Limits into Operation Cost](rationale.md#unification-of-limits-into-operation-cost)
@@ -383,12 +387,6 @@ Please see the following reference implementations for additional examples and t
 - Go:
   - [BCHD](https://bchd.cash/) – An alternative full node bitcoin cash implementation written in Go (golang). [OPReturnCode/bchd PR #1](https://github.com/OPReturnCode/bchd/pull/1)
 
-## Costs & Risk Assessment
-
-- [Appendix: Risk Assessment &rarr;](rationale.md#rationale)
-  - [Density-based Operational Cost Limit](rationale.md#density-based-operational-cost-limit)
-  - [Retention of Control Stack Limit](rationale.md#retention-of-control-stack-limit)
-
 ## Evaluations of Alternatives
 
 This proposal comprehensively evaluates notable alternatives for each design decision made in the technical specification. Reviewed alternatives are enumerated here for ease of review:
@@ -413,13 +411,27 @@ This proposal comprehensively evaluates notable alternatives for each design dec
 
 - **Additional Limitations on `OP_CODESEPARATOR`** – If this proposal were to omit hashing limitations on signing serializations, additional limitations would be required to prevent abuse of `OP_CODESEPARATOR`. As `OP_CODESEPARATOR` remains useful, additional limitations would increase overall protocol complexity, and limitation of signing serialization hashing is otherwise prudent, this proposal instead avoid singling-out `OP_CODESEPARATOR` for special limitation. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](./rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
 
-- **Additional Limitations on `OP_CHECKMULTISIG*`** – Because operation count currently limits the eccentric use of `OP_CHECKMULTISIG` for stack-dropping behavior, this proposal could attempt to place new restrictions on `OP_CHECKMULTISIG` to prevent expanded usage. However, because the unusual feature has been available to contract authors since Bitcoin Cash's 2009 launch, remains useful, does not impact validation costs, this proposal does not attempt to apply new limitations for this case. See [Increased Usability of Multisig Stack Clearing](./rationale.md#increased-usability-of-multisig-stack-clearing).
+- **Additional Limitations on `OP_CHECKMULTISIG*`** – Because operation count currently limits the eccentric use of `OP_CHECKMULTISIG` for stack-dropping behavior, this proposal could attempt to place new restrictions on `OP_CHECKMULTISIG` to prevent expanded usage. However, because the unusual feature has been available to contract authors since Bitcoin Cash's 2009 launch, remains useful, and does not impact validation costs, this proposal does not attempt to apply new limitations for this case. See [Increased Usability of Multisig Stack Clearing](./rationale.md#increased-usability-of-multisig-stack-clearing).
 
 - **Continuous Tracking of Total Stack Usage** – Instead of simply tracking total stack-pushed bytes, this proposal could limit memory usage by continuously tracking total usage and enforcing some maximum limit. However, this would increase implementation complexity, only implicitly limit memory bandwidth usage, and require additional limitations on linear-time operations. See [Rationale: Limitation of Pushed Bytes](./rationale.md#limitation-of-pushed-bytes).
 
 - **Omit Base Instruction Cost** – this proposal could alternatively omit Base Instruction Cost, limiting the cost of all instructions to their impact on the stack. However, instruction evaluation is not costless – a nonzero base cost properly accounts for the real world overhead of evaluating an instruction and verifying non-violation of applicable limits. See [Rationale: Selection of Base Instruction Cost](./rationale.md#selection-of-base-instruction-cost).
 
 - **Omit Numeric Encoding Cost** – this proposal could alternatively omit the cost of numeric encoding from [arithmetic operation cost](#arithmetic-operation-cost). However, if this proposal were to assume zero operation cost for encoding/decoding, this optimization would be required of all performance-critical VM implementations to avoid divergence of real performance from measured operation cost. See [Rationale: Inclusion of Numeric Encoding in Operation Costs](./rationale.md#inclusion-of-numeric-encoding-in-operation-costs).
+
+## Risk Assessment
+
+- [Appendix: Risk Assessment &rarr;](risk-assessment.md#risk-assessment)
+  - [Risks \& Security Considerations](risk-assessment.md#risks--security-considerations)
+    - [User Impact Risks](risk-assessment.md#user-impact-risks)
+      - [Reduced or Equivalent Node Validation Costs](risk-assessment.md#reduced-or-equivalent-node-validation-costs)
+      - [Increased or Equivalent Contract Capabilities](risk-assessment.md#increased-or-equivalent-contract-capabilities)
+    - [Consensus Risks](risk-assessment.md#consensus-risks)
+      - [Full-Transaction Test Vectors](risk-assessment.md#full-transaction-test-vectors)
+      - [New Performance Testing Methodology](risk-assessment.md#new-performance-testing-methodology)
+      - [`Chipnet` Preview Activation](risk-assessment.md#chipnet-preview-activation)
+    - [Denial-of-Service (DoS) Risks](risk-assessment.md#denial-of-service-dos-risks)
+      - [Expanded Node Performance Safety Margin](risk-assessment.md#expanded-node-performance-safety-margin)
 
 ## Stakeholders & Statements
 
