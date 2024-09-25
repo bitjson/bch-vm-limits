@@ -243,7 +243,7 @@ cd bitcoin-cash-node
 git checkout wip_new_vmb_bench_vmlimits_bigint
 mkdir build
 cd build
-cmake -GNinja .. -DBUILD_BITCOIN_WALLET=OFF -DBUILD_BITCOIN_QT=OFF -DENABLE_NATPMP=OFF -DCMAKE_BUILD_TYPE=Release
+cmake -GNinja .. -DBUILD_BITCOIN_WALLET=OFF -DBUILD_BITCOIN_QT=OFF -DENABLE_NATPMP=OFF -DENABLE_MAN=OFF -DCMAKE_BUILD_TYPE=Release
 ninja
 ninja bench_bitcoin
 # Requires ~6-24 hrs, produces 2 separate CSV lists:
