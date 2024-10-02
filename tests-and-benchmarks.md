@@ -5,6 +5,23 @@
 1. a full, encoded test transaction, and
 2. An encoded set of UTXOs with which to validate the transaction.
 
+<details>
+
+<summary><strong>Table of Contents</strong></summary>
+
+- [Testing](#testing)
+  - [Standard Vs. Nonstandard VMs](#standard-vs-nonstandard-vms)
+  - [VMB Test Contents](#vmb-test-contents)
+- [Benchmarks](#benchmarks)
+  - [Baseline Benchmark](#baseline-benchmark)
+- [Evaluation of Results](#evaluation-of-results)
+  - [Bitcoin Cash Node (C++)](#bitcoin-cash-node-c)
+    - [Verification (BCHN)](#verification-bchn)
+  - [Libauth (JavaScript)](#libauth-javascript)
+    - [Verification (Libauth)](#verification-libauth)
+
+</details>
+
 ## Testing
 
 For ease of use, VMB tests are divided into directories by annual Virtual Machine (VM) version and expected evaluation result. All tests in each directory must be evaluated against both VM modes for that annual VM version, and validation performance measured relative to the [baseline test]()
@@ -233,14 +250,14 @@ The following worst-case results for each category have been extracted from the 
 
 </details>
 
-### Verification
+### Verification (BCHN)
 
 To independently reproduce the [provided data sets](./benchmarks/) on a new target system, execute the following commands on the system to be tested:
 
 ```sh
 git clone https://gitlab.com/cculianu/bitcoin-cash-node.git
 cd bitcoin-cash-node
-git checkout wip_new_vmb_bench_vmlimits_bigint
+git checkout merged_vmlimits_bigint_with_updated_benches
 mkdir build
 cd build
 cmake -GNinja .. -DBUILD_BITCOIN_WALLET=OFF -DBUILD_BITCOIN_QT=OFF -DENABLE_NATPMP=OFF -DENABLE_MAN=OFF -DCMAKE_BUILD_TYPE=Release
@@ -264,7 +281,7 @@ Libauth duplicates significant quantities of data for each evaluated contract op
 
 ![Copy-on-Write, Contract-Debugging VM Performance (for Web Browser-Based Developer Tooling)](./benchmarks/libauth-results.png)
 
-### Verification
+### Verification (Libauth)
 
 To independently reproduce the [provided data sets](./benchmarks/) on a new target system, execute the following commands on the system to be tested:
 
