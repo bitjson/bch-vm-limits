@@ -6,7 +6,7 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-09-24
+        Latest Revision Date: 2024-10-01
         Version: 3.1.1
 
 <details>
@@ -470,25 +470,25 @@ This proposal evaluates notable alternatives for each design decision made in th
 
 This section summarizes the evolution of this document.
 
-- **v3.1.1**
+- **v3.1.1 – 2024-10-01** ([`6b87d517`](https://github.com/bitjson/bch-vm-limits/commit/6b87d517081f2fdba6a50b8e7fb9147321def609))
   - Add [overview of benchmarking process and results](./tests-and-benchmarks.md)
   - Add [Risk Assessment](./risk-assessment.md)
   - Add latest test vectors and benchmarks ([#7](https://github.com/bitjson/bch-vm-limits/issues/7))
   - Add [Rationale: Use of Explicitly-Defined Density Limits](./rationale.md#use-of-explicitly-defined-density-limits) ([#28](https://github.com/bitjson/bch-vm-limits/issues/28))
   - Clarify explanation of hash digest iteration formula ([#29](https://github.com/bitjson/bch-vm-limits/issues/29))
   - Add [Rationale: Non-Impact on "Data Storage" Costs and Incentives](rationale.md#non-impact-on-data-storage-costs-and-incentives) ([#18](https://github.com/bitjson/bch-vm-limits/issues/18))
-- **v3.1.0** ([`35dc2c52`](https://github.com/bitjson/bch-vm-limits/commit/35dc2c5210bb34dc5255c0613a6665edff07d6c0))
+- **v3.1.0 – 2024-09-02** ([`35dc2c52`](https://github.com/bitjson/bch-vm-limits/commit/35dc2c5210bb34dc5255c0613a6665edff07d6c0))
   - Base densities on input length rather than transaction length ([#21](https://github.com/bitjson/bch-vm-limits/issues/21))
   - Include numeric encoding in operation costs ([#20](https://github.com/bitjson/bch-vm-limits/issues/20))
-- **v3.0.1** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))
+- **v3.0.1 – 2024-08-13** ([`929ef37`](https://github.com/bitjson/bch-vm-limits/commit/929ef37c6d5fb14736a62c3123904d80efc59b80))
   - Correct and clarify operation cost table ([#17](https://github.com/bitjson/bch-vm-limits/issues/17))
   - Clarify more differences between existing and upgraded behavior
-- **v3.0.0** ([`4eba48ea`](https://github.com/bitjson/bch-vm-limits/commit/4eba48ea4648a5ad39f40ff11bfebbe3459fca83))
+- **v3.0.0 – 2024-08-06** ([`4eba48ea`](https://github.com/bitjson/bch-vm-limits/commit/4eba48ea4648a5ad39f40ff11bfebbe3459fca83))
   - Revise limits to be density based ([#8](https://github.com/bitjson/bch-vm-limits/issues/8))
   - Limit bytes pushed to the stack ([#10](https://github.com/bitjson/bch-vm-limits/issues/10))
   - Limit depth of control stack ([#11](https://github.com/bitjson/bch-vm-limits/issues/11))
   - Note accounting of P2SH redeem bytecode digest iterations ([#14](https://github.com/bitjson/bch-vm-limits/issues/14))
-- **v2.0.0** ([`e686b981`](https://github.com/bitjson/bch-vm-limits/commit/e686b981e14f9f69433682dda9df8b204c66b709))
+- **v2.0.0 – 2024-02-03** ([`e686b981`](https://github.com/bitjson/bch-vm-limits/commit/e686b981e14f9f69433682dda9df8b204c66b709))
   - Simplify stack memory limit calculation ([#6](https://github.com/bitjson/bch-vm-limits/pull/6))
   - Correct hashing benchmarks, update hashing limit ([#6](https://github.com/bitjson/bch-vm-limits/pull/6))
   - Propose for May 2025 Upgrade
