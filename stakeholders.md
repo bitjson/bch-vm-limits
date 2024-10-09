@@ -78,6 +78,14 @@ The following statements have been submitted in support of this CHIP.
 >
 > —<cite>[bitcoincashautist](https://gitlab.com/0353F40E), Bitcoin Cash researcher & developer, [CHIP-2023-04 Adaptive Blocksize Limit Algorithm](https://gitlab.com/0353F40E/ebaa) Owner</cite>
 
+> I'm excited about all the possibilities that the VM Limits and BigInt CHIPs enable. Additionally, the simplified contract development is a significant advantage, as it makes it easier for new talent to start building. I approve of activating these CHIPs in 2025.
+>
+> —<cite> [OPReturnCode](https://github.com/OPReturnCode/), [BCHD](https://github.com/gcash/bchd) lead developer, [Electron Cash](https://electroncash.org/) contributor</cite>
+
+> BCH has always been smart internet money. Bitcoin Verde supports the bch-bigint and bch-vm-limit CHIPs for the Bitcoin Cash 2025 upgrade. This upgrade enables smart contracts like never seen before on BCH.
+>
+> —<cite>Josh Green ([@joshmgreen](https://x.com/joshmgreen/status/1844052791255499140)), [Bitcoin Verde](https://bitcoinverde.org/)</cite>
+
 > This proposal will unlock the next generation of smart contracts on Bitcoin Cash. Incredibly it unlocks Ethereum-level complexity with no sacrifice at the alter of global state. This will be a huge competitive advantage for Bitcoin Cash in the coming years. The conservative approach to the new limits along with the thorough benchmarking, risk assessment and documentation leave no doubt that we can safely adopt this CHIP in May, and I support doing so.
 >
 > While the VM Limits proposal unlocks Ethereum-level complexity on Bitcoin Cash, our developer experience (DX) must aim for simplicity. That includes straightforward manipulation of numbers, regardless of their size and without a need for libraries or extra operations. This BigInt proposal will deliver a simple and powerful DX with no compromise on security or performance and I therefore support its adoption."
@@ -156,6 +164,39 @@ The following statements have been submitted in support of this CHIP.
 > I support BigInt and VM Limits CHIPs. It had me on stronger escrow contracts and post-quantum cryptography. BCH is making it nearly impossible for other coins to compete.
 >
 > —<cite>Bruno ([@brunopbch](https://x.com/Brunopbch/status/1842234652930773377)), translation (Brazilian Portuguese), merchant onboarding</cite>
+
+> I'm often humbled by the big brains in the #BitcoinCash space. When asked to submit my 0.00006 #BCH on the proposed 2025 CHIP for VMLimits & BigInt, I thought; I'm in no way qualified to weigh in on such matters. From a tech/dev perspective, I truly am not!
+>
+> Then, I realized that it's not JUST about the tech...it's also about timing, striking while the iron is hot and doubling-down on the #BitcoinCash momentum we're seeing happen right now! This is something I DO know a lot about, having single-handedly built a business from the ground up and seizing opportunities in a timely manner when they presented themselves.
+>
+> It might just be me, but I can't help feeling like we're at the dawn of some really big things with #BitcoinCash. For that reason, and FWIW, I fully support the 2025 CHIP for VMLimits & BigInt (bonus👊). I think NOT capitalizing on this opportunity (that's been three years in the making) will come with bigger opportunity costs than the low-risk of moving ahead NOW with this thoroughly vetted CHIP in May of 2025!
+>
+> We all stand on the shoulders of giants in one way or another and I take comfort knowing we have some of the biggest giants, brains and heavyweights in all of Crypto!
+>
+> Let's add rocket-fuel to the #BCH Script Engine!🚀 Bring on the smart contract and #BCH DApp goldush!⛏️ Release the horde of new developers, users and converts!🤯
+>
+> VMLimits & BigInt FTW! 👊💚💪
+>
+> —<cite>Steve Thurmond ([@stevethurmond](https://x.com/stevethurmond/status/1843518141651095863)), [Forward Financial, LLC](https://forwardfi.com/), [CashStamps](https://stamps.cash/) creative</cite>
+
+> The VM Limits and BigInt CHIPs sound great, I support activation in 2025. I think the cost for the network is that nodes have to implement high-precision arithmetic which will make accounting more accurate. I love to have more tests and benchmark so we can move forward with confidence.
+>
+> —<cite>Damascene, [Testnet faucet](tbch.googol.cash), [Hur project](https://hur-project.gitlab.io/hur-freelancers/), [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/)</cite>
+
+> As a developer of Opal Wallet, I fully endorse the activation of CHIP-2024-07-BigInt and CHIP-2021-05-vm-limits in the upcoming 2025 Bitcoin Cash upgrade. These improvements are key to realizing Bitcoin Cash's vision as true electronic cash, optimizing contracts and transactions on-chain.
+> For Opal Wallet, these CHIPs will directly enhance features such as:
+>
+> - Batch Payments: Enabling businesses to make bulk payments more efficiently.
+> - Reduced Fees: Leveraging high-precision BigInt operations to reduce contract sizes and transaction fees for users.
+> - Improved UTXO Management: Expanding capabilities for handling complex UTXOs, enhancing user control, privacy, and efficiency.
+>
+> These upgrades enhance BCH's scripting abilities without compromising speed or security, aligning with our mission to provide the best possible Bitcoin Cash experience to all users.
+>
+> —<cite>Coda Beatrix ([@codabeatrix](https://x.com/codabeatrix)), Developer at [58 Opals](https://58opals.com), Developer of [SwiftFulcrum](https://github.com/58opals/SwiftFulcrum)/[Opal Base](https://github.com/58opals/OpalBase)/[Opal Wallet](https://opalwallet.cash)</cite>
+
+> I looked over the VM Limits and BigInt CHIPs, and I support activation in 2025. These proposals seem like a sensible thing to do, since most of these limits were set 10+ years ago, for hardware that would be considered barely functional today. Seems like these proposals should enable much more interesting use cases.
+>
+> —<cite>Simon, [Read.cash](https://read.cash/), [Noise.app](https://Noise.app/)</cite>
 
 ### Disapprove
 
