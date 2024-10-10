@@ -198,6 +198,12 @@ The following statements have been submitted in support of this CHIP.
 >
 > —<cite>Simon, [Read.cash](https://read.cash/), [Noise.app](https://Noise.app/)</cite>
 
+> I validated the overall [MR 1891](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/merge_requests/1891) for the VM Limits and BigInt CHIPs With updated LibAuth and benchmark scheme. I performed benchmarks and executed the test plan. After that I [shared my results](https://gitlab.com/bitcoin-cash-node/bitcoin-cash-node/-/merge_requests/1891#note_2138753900) with the BCHN development team, everything looks good and results match expectation (and my CPU is apparently 30% faster than from Calin ^^).
+>
+> Although I'm not the expert of the BCHN code source, everything does seems to work as expected eventually and compiling now also works without any warnings. Despite not having the deeper knowledge about the technical implementation of the CHIPs, better performance is always very welcome! Specifically in favour of the reduced transaction sizes; same for reduction of storage as well as CPU usage reduction. I'm running a full node after all.
+> _Disclaimer:_ I didn't yet run production or load testing with the latest CHIPs. If I find any regression, I will report it via GitLab / Slack.
+> - <cite>Melroy van den Berg, [Melroy's BCH Explorer](https://explorer.melroy.org), [Melroy.org](https://melroy.org)</cite>
+
 ### Disapprove
 
 The following statements have been submitted from individuals and organizations that disapprove of this CHIP.
