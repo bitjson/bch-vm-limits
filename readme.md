@@ -1,4 +1,4 @@
-# CHIP-2021-05-vm-limits: Targeted Virtual Machine Limits
+# CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits
 
         Title: Targeted Virtual Machine Limits
         Type: Standards
