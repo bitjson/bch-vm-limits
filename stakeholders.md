@@ -271,7 +271,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [B2BinPay](https://b2binpay.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BCH BULL](https://bchbull.com/)                               |   `v3.1.1`    |   ✅    |            |         |         |
 | [BCH Guru](https://bch.guru/)                                  |   `v3.1.1`    |   ✅    |            |         |         |
-| [BCH.games](https://bch.games/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
+| [BCH.games](https://bch.games/)                                |   `v3.1.1`    |   ✅    |            |         |         |
 | [bchportal.cash](https://bchportal.cash/)                      |   `v3.1.1`    |   ✅    |            |         |         |
 | [BenSwap](https://benswap.cash/)                               |   `v3.1.1`    |         |            |   ➖    |         |
 | [BEQUANT](https://bequant.io/)                                 |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -407,7 +407,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Forward Financial](https://forwardfi.com/)                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [Foundry](https://foundrydigital.com/)                         |   `v3.1.1`    |         |            |         |   ⏳    |
 | [FundMe.cash](https://fundme.cash)                             |   `v3.1.1`    |   ✅    |            |         |         |
-| [Gambling Apes Club](https://apes.cash/)                       |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Gambling Apes Club](https://apes.cash/)                       |   `v3.1.1`    |   ✅    |            |         |         |
 | [Gate.io](https://gate.io/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [GateHub](https://gatehub.net/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Guardarian](https://guardarian.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -480,7 +480,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Paxos](https://paxos.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Paybis](https://paybis.com)                                   |   `v3.1.1`    |         |            |         |   ⏳    |
 | [PayPal](https://paypal.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Pepi](https://pepi.cash/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Pepi](https://pepi.cash/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [Phemex](https://phemex.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Pionex](https://www.pionex.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Plisio](https://plisio.net/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -489,7 +489,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Poolside Puffers](https://puffers.cash/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Poloniex](https://poloniex.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [PrimeXBT](https://primexbt.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Prompt.Cash](https://prompt.cash/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Prompt.Cash](https://prompt.cash/)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [ProBit](https://www.probit.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [PROHASHING](https://prohashing.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Publish0x](https://www.publish0x.com/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -545,7 +545,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Venmo](https://venmo.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Verse](https://verse.bitcoin.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [ViaBTC](https://www.viabtc.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Visionati](https://visionati.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Visionati](https://visionati.com/)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Wayex](https://www.wayex.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [WazirX](https://wazirx.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Wealth99](https://www.wealth99.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -595,6 +595,7 @@ The following articles have been published in support of this CHIP:
 - [Bitcoin Cash TV](https://bitcoincashtv.com/): [Statement via x.com](https://x.com/BitcoinCashTV/status/1846931459296125007) (October 17, 2024)
 - [BitcoinCash Nigeria](https://bch.ng/): [Statement via x.com](https://x.com/bch_nigeria/status/1847081185140228518) (October 17, 2024)
 - [FullStack.Cash](https://fullStack.cash): [Statement via x.com](https://x.com/christroutner/status/1847300696422637889) (October 18, 2024)
+- [Pantera Crypto](https://www.youtube.com/@PanteraCrypto): [BitcoinCash 2025 Developments: VM-Limits and BigInt](https://read.cash/@Pantera/bitcoincash-2025-developments-vm-limits-and-bigint-220b9814) (October 21, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -819,6 +820,10 @@ The following statements have been submitted in support of this CHIP.
 > I support the VM Limits and BigInt CHIPs, and I look forward to the possibilities they open up.
 >
 > —<cite>Chris Troutner ([@christroutner](https://x.com/christroutner/status/1847300696422637889)), [FullStack.Cash](https://fullStack.cash), [Permissionless Software Foundation](https://psfoundation.info/) contributor</cite>
+
+> Visionati approves of both CHIPs. We feel they will be an excellent addition to BCH and allow script writers much needed flexibility to extend BCH functionality.
+>
+> —<cite>[Visionati](https://visionati.com/)</cite>
 
 ### Disapprove
 
