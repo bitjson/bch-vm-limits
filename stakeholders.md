@@ -186,7 +186,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [CashFusion Red Team](https://fusionstats.redteam.cash/)                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [CashNodes.io](https://cashnodes.io/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [cashp](https://github.com/Ekliptor/cashp)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [CashScript](https://cashscript.org/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
+| [CashScript](https://cashscript.org/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashTags](https://tags.infra.cash/)                                      |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashTokens.org](https://cashtokens.org/)                                 |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashTokens Airdrop Tool](https://github.com/mr-zwets/airdrop-tool)       |   `v3.1.1`    |   ✅    |            |         |         |
@@ -496,7 +496,6 @@ Responses from exchanges, miners, services, and other businesses.
 | [Purse](https://purse.io/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Read.cash](https://read.cash/)                                |   `v3.1.1`    |   ✅    |            |         |         |
 | [Reku](https://reku.id/)                                       |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Revoke.cash](https://revoke.cash/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Revolut](https://www.revolut.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [RamNode](https://ramnode.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Riften Labs](https://www.riftenlabs.com/)                     |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -596,6 +595,7 @@ The following articles have been published in support of this CHIP:
 - [BitcoinCash Nigeria](https://bch.ng/): [Statement via x.com](https://x.com/bch_nigeria/status/1847081185140228518) (October 17, 2024)
 - [FullStack.Cash](https://fullStack.cash): [Statement via x.com](https://x.com/christroutner/status/1847300696422637889) (October 18, 2024)
 - [Pantera Crypto](https://www.youtube.com/@PanteraCrypto): [BitcoinCash 2025 Developments: VM-Limits and BigInt](https://read.cash/@Pantera/bitcoincash-2025-developments-vm-limits-and-bigint-220b9814) (October 21, 2024)
+- [CashScript](https://cashscript.org/): [Statement via github.com](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826) (October 22, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -824,6 +824,14 @@ The following statements have been submitted in support of this CHIP.
 > Visionati approves of both CHIPs. We feel they will be an excellent addition to BCH and allow script writers much needed flexibility to extend BCH functionality.
 >
 > —<cite>[Visionati](https://visionati.com/)</cite>
+
+> The CashScript compiler has been one of the main tools through which BCH contract developers encounter the current, overly restrictive VM limits. The implementation of the 'Targeted VM Limits' CHIP will significantly reduce this pain point, providing much-needed flexibility without compromising the security or scalability of the network.
+>
+> For BCH contract developers, the most immediate limit will shift from the current 201-opcode limit to the 1650-byte input size standard rule. This CHIP effectively expands the capacity of smart contracts to include approximately ~10x the number of opcodes or ~3x the byte size.
+>
+> We are excited to eliminate the 201-opcode and 520-byte limits from the CashScript compiler, empowering BCH contract developers to experiment with and build more powerful and innovative smart contracts.
+>
+> —<cite>[CashScript](https://cashscript.org/) ([Issue #219](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826))</cite>
 
 ### Disapprove
 
