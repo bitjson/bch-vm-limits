@@ -89,7 +89,7 @@ Responses from wallets that support Bitcoin Cash.
 | ---------------------------------------------------------------- | :-----------: | :-----: | :--------: | :-----: | :-----: |
 | [Atomic Wallet](https://atomicwallet.io/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
 | [`bchwallet`](https://github.com/gcash/bchwallet)                |   `v3.1.1`    |   ✅    |            |         |         |
-| [Bitcoin.com Wallet](https://wallet.bitcoin.com/)                |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Bitcoin.com Wallet](https://wallet.bitcoin.com/)                |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitPay Wallet](https://bitpay.com/wallet)                       |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitpie](https://bitpie.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BlockParty Wallet](https://blockparty.sh/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -285,7 +285,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Bitbuy](https://bitbuy.ca/)                                   |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitbank](https://bitbank.cc/)                                 |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BitCats Heroes Club](https://bitcatsheroes.club/)             |   `v3.1.1`    |   ✅    |            |         |         |
-| [Bitcoin.com](https://bitcoin.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Bitcoin.com](https://bitcoin.com/)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin.de](https://www.bitcoin.de/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BitcoinVN](https://bitcoinvn.io/)                             |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Group SE](https://bitcoingroup.com/)                  |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -542,7 +542,6 @@ Responses from exchanges, miners, services, and other businesses.
 | [Uphold](https://uphold.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Uptick](https://uptick.co/)                                   |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Venmo](https://venmo.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Verse](https://verse.bitcoin.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [ViaBTC](https://www.viabtc.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Visionati](https://visionati.com/)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Wayex](https://www.wayex.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -596,6 +595,7 @@ The following articles have been published in support of this CHIP:
 - [FullStack.Cash](https://fullStack.cash): [Statement via x.com](https://x.com/christroutner/status/1847300696422637889) (October 18, 2024)
 - [Pantera Crypto](https://www.youtube.com/@PanteraCrypto): [BitcoinCash 2025 Developments: VM-Limits and BigInt](https://read.cash/@Pantera/bitcoincash-2025-developments-vm-limits-and-bigint-220b9814) (October 21, 2024)
 - [CashScript](https://cashscript.org/): [Statement via github.com](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826) (October 22, 2024)
+- [Bitcoin.com](https://www.bitcoin.com/): [A Major Improvement to Bitcoin Cash Will Smash Developer Bottlenecks](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/) (October 22, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -832,6 +832,14 @@ The following statements have been submitted in support of this CHIP.
 > We are excited to eliminate the 201-opcode and 520-byte limits from the CashScript compiler, empowering BCH contract developers to experiment with and build more powerful and innovative smart contracts.
 >
 > —<cite>[CashScript](https://cashscript.org/) ([Issue #219](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826))</cite>
+
+> By enabling greater flexibility in smart contract design, BCH is positioning itself as a testbed for risk-on features, similar to how Litecoin led the way with Segwit before Bitcoin. It’ll be interesting to see how BCH developments are adopted in the crypto space.
+>
+> —<cite>Corbin Fraser ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) CEO</cite>
+
+> These proposals are net positives for Bitcoin Cash. By removing outdated restrictions, they’re giving developers the freedom to create the next generation of BCH dapps with greater efficiency and security. That’s obviously a win for users too.
+>
+> —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
 
 ### Disapprove
 
