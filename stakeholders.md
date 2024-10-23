@@ -845,10 +845,6 @@ The following statements have been submitted in support of this CHIP.
 >
 > —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
 
-> These proposals are net positives for Bitcoin Cash. By removing outdated restrictions, they’re giving developers the freedom to create the next generation of BCH dapps with greater efficiency and security. That’s obviously a win for users too.
->
-> —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
-
 > The VM-limit CHIP is a much better retooling of computation and cost trade-offs to safely expand the potential of the VM without impacting performance. Great work!
 > 
 > —<cite>2qx ([memo](https://memo.cash/a/e4e121bed1)) Independent Bitcoin Application Developer, [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor,  [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
