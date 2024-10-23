@@ -143,7 +143,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | ------------------------------------------------------------------------- | :-----------: | :-----: | :--------: | :-----: | :-----: |
 | [Accept Bitcoin Cash Initiative](https://acceptbitcoin.cash/)             |   `v3.1.1`    |         |            |         |   ⏳    |
 | [ActorForth](https://github.com/ActorForth/ActorForth)                    |   `v3.1.1`    |         |            |         |   ⏳    |
-| [awesomebitcoin.cash](https://awesomebitcoin.cash/)                       |   `v3.1.1`    |         |            |         |   ⏳    |
+| [awesomebitcoin.cash](https://awesomebitcoin.cash/)                       |   `v3.1.1`    |   ✅    |            |         |         |
 | [bch.info](https://bch.info/)                                             |   `v3.1.1`    |         |            |         |   ⏳    |
 | [`bch-rpc-explorer`](https://github.com/sickpig/bch-rpc-explorer)         |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BCH Bull](https://bchbull.com/)                                          |   `v3.1.1`    |   ✅    |            |         |         |
@@ -202,6 +202,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Flowee Products](https://flowee.org/products/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Fountainhead Cash](https://fountainhead.cash/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Fulcrum](https://github.com/cculianu/Fulcrum)                            |   `v3.1.1`    |   ✅    |            |         |         |
+| [Future Bitcoin Cash](https://futurebitcoin.cash)                         |   `v3.1.1`    |   ✅    |            |         |         |
 | [Googol.cash Testnet Faucet](https://tbch4.googol.cash/)                  |   `v3.1.1`    |   ✅    |            |         |         |
 | [Haskoin](https://github.com/haskoin/haskoin-core)                        |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Jedex](https://github.com/bitjson/jedex)                                 |   `v3.1.1`    |   ✅    |            |         |         |
@@ -242,6 +243,8 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Tipb.ch](https://tipb.ch)                                                |   `v3.1.1`    |   ✅    |            |         |         |
 | [Tokenaut](https://www.tokenaut.cash/)                                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [TokenStork](https://tokenstork.com/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
+| [Unspent.cash](https://unspent.cash/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
+| [Unspent Phi](https://unspent.app/)                                       |   `v3.1.1`    |   ✅    |            |         |         |
 | [Watchtower](https://watchtower.cash/)                                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [Where2.cash](https://www.where2.cash/)                                   |   `v3.1.1`    |         |            |         |   ⏳    |
 
@@ -596,6 +599,7 @@ The following articles have been published in support of this CHIP:
 - [Pantera Crypto](https://www.youtube.com/@PanteraCrypto): [BitcoinCash 2025 Developments: VM-Limits and BigInt](https://read.cash/@Pantera/bitcoincash-2025-developments-vm-limits-and-bigint-220b9814) (October 21, 2024)
 - [CashScript](https://cashscript.org/): [Statement via github.com](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826) (October 22, 2024)
 - [Bitcoin.com](https://www.bitcoin.com/): [A Major Improvement to Bitcoin Cash Will Smash Developer Bottlenecks](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/) (October 22, 2024)
+- [FutureBitcoin.cash](https://futurebitcoin.cash/): [FBCH supports CHIP-2021-05 VM Limits](https://futurebitcoin.cash/vm-limits) (October 23, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -840,6 +844,14 @@ The following statements have been submitted in support of this CHIP.
 > These proposals are net positives for Bitcoin Cash. By removing outdated restrictions, they’re giving developers the freedom to create the next generation of BCH dapps with greater efficiency and security. That’s obviously a win for users too.
 >
 > —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
+
+> These proposals are net positives for Bitcoin Cash. By removing outdated restrictions, they’re giving developers the freedom to create the next generation of BCH dapps with greater efficiency and security. That’s obviously a win for users too.
+>
+> —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
+
+> The VM-limit CHIP is a much better retooling of computation and cost trade-offs to safely expand the potential of the VM without impacting performance. Great work!
+> 
+> —<cite>2qx ([memo](https://memo.cash/a/e4e121bed1)) Independent Bitcoin Application Developer, [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor,  [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
 
 ### Disapprove
 
