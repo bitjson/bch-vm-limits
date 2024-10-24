@@ -504,7 +504,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Riften Labs](https://www.riftenlabs.com/)                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Robinhood](https://robinhood.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Rocketr](https://rocketr.net/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [SatoshiDice](https://satoshidice.com/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
+| [SatoshiDice](https://satoshidice.com/)                        |   `v3.1.1`    |   ✅    |            |         |         |
 | [SBICrypto Pool](https://sbicrypto.com/)                       |   `v3.1.1`    |         |            |         |   ⏳    |
 | [ShapeShift](https://shapeshift.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [SideShift.ai](https://sideshift.ai/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -600,6 +600,7 @@ The following articles have been published in support of this CHIP:
 - [CashScript](https://cashscript.org/): [Statement via github.com](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826) (October 22, 2024)
 - [Bitcoin.com](https://www.bitcoin.com/): [A Major Improvement to Bitcoin Cash Will Smash Developer Bottlenecks](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/) (October 22, 2024)
 - [FutureBitcoin.cash](https://futurebitcoin.cash/): [FBCH supports CHIP-2021-05 VM Limits](https://futurebitcoin.cash/vm-limits) (October 23, 2024)
+- [Bitcoin Cash Podcast](https://bitcoincashpodcast.com/): [CHIP Endorsement May 2025](https://x.com/TheBCHPodcast/status/1849501507613253692) (October 24, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -846,8 +847,22 @@ The following statements have been submitted in support of this CHIP.
 > —<cite>Andreas Larsson ([via Bitcoin.com News](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/)), [Bitcoin.com](https://www.bitcoin.com) Director of Engineering</cite>
 
 > The VM-limit CHIP is a much better retooling of computation and cost trade-offs to safely expand the potential of the VM without impacting performance. Great work!
-> 
-> —<cite>2qx ([memo](https://memo.cash/a/e4e121bed1)) Independent Bitcoin Application Developer, [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor,  [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
+>
+> —<cite>2qx ([memo](https://memo.cash/a/e4e121bed1)) Independent Bitcoin Application Developer, [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor, [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
+
+> SatoshiDice fully supports both Proposals - Yes to both! We echo the sentiments of Bitcoin.com: https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/
+>
+> Let's keep building Bitcoin Cash into the currency of the future!
+>
+> —<cite>[SatoshiDice](https://satoshidice.com/) Admin Team</cite>
+
+> I support CHIP-2021-05 VM Limits and CHIP-2024-07 BigInt. Training wheels are always meant to come off when safe to do so. This is a safe, well vetted, power-enhancing and widely encouraged upgrade.
+>
+> —<cite>[Andrew#128](https://gitlab.com/andrew-128), [Bitcoin Cash Node](https://bitcoincashnode.org/) contributor, [Electron Cash](https://electroncash.org/) contributor</cite>
+
+> The Bitcoin Cash Podcast is adding its support & approval for `CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits` & `CHIP-2024-07 BigInt: High-Precision Arithmetic`, to lock in November 15 2024 & go live May 15 2025.
+>
+> —<cite>[Bitcoin Cash Podcast](https://bitcoincashpodcast.com/) ([CHIP Endorsement May 2025](https://x.com/TheBCHPodcast/status/1849501507613253692), October 24, 2024)</cite>
 
 ### Disapprove
 
