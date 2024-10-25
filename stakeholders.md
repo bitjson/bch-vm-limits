@@ -74,7 +74,7 @@ Responses from open source node and Virtual Machine (VM) implementations that su
 | Implementation                                          | As of Version | Approve | Disapprove | Neutral | Pending |
 | ------------------------------------------------------- | :-----------: | :-----: | :--------: | :-----: | :-----: |
 | [BCHD](https://bchd.cash/)                              |   `v3.1.1`    |   ✅    |            |         |         |
-| [Bitcoin Cash Node](https://bitcoincashnode.org/)       |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Bitcoin Cash Node](https://bitcoincashnode.org/)       |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Unlimited](https://www.bitcoinunlimited.info/) |   `v3.1.1`    |         |            |   ➖    |         |
 | [Bitcoin Verde](https://bitcoinverde.org/)              |   `v3.1.1`    |   ✅    |            |         |         |
 | [Flowee](https://flowee.org/products/hub/)              |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -601,6 +601,7 @@ The following articles have been published in support of this CHIP:
 - [Bitcoin.com](https://www.bitcoin.com/): [A Major Improvement to Bitcoin Cash Will Smash Developer Bottlenecks](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/) (October 22, 2024)
 - [FutureBitcoin.cash](https://futurebitcoin.cash/): [FBCH supports CHIP-2021-05 VM Limits](https://futurebitcoin.cash/vm-limits) (October 23, 2024)
 - [Bitcoin Cash Podcast](https://bitcoincashpodcast.com/): [CHIP Endorsement May 2025](https://x.com/TheBCHPodcast/status/1849501507613253692) (October 24, 2024)
+- [Bitcoin Cash Node](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25): [BCHN maintainers' opinion on the VM-Limits and Bigint upgrades for 2025](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25) (October 25, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -863,6 +864,14 @@ The following statements have been submitted in support of this CHIP.
 > The Bitcoin Cash Podcast is adding its support & approval for `CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits` & `CHIP-2024-07 BigInt: High-Precision Arithmetic`, to lock in November 15 2024 & go live May 15 2025.
 >
 > —<cite>[Bitcoin Cash Podcast](https://bitcoincashpodcast.com/) ([CHIP Endorsement May 2025](https://x.com/TheBCHPodcast/status/1849501507613253692), October 24, 2024)</cite>
+
+> Two Cash Improvement Proposals (CHIPs) are currently frontrunners for lock in on 15th November 2024, and activation on 15th May 2025: [CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits](https://github.com/bitjson/bch-vm-limits/) and [CHIP-2024-07 BigInt: High-Precision Arithmetic for Bitcoin Cash](https://github.com/bitjson/bch-bigint). Despite CHIP-2024-07-BigInt's late introduction, both of them have matured as of October 2024, and are receiving widespread support from the community.
+>
+> The Bitcoin Cash Node team was intimately involved with implementing and testing both proposals. **The maintainers can now confidently say that these CHIPs seem to be in sufficiently good shape, and worthy of our endorsement.**
+>
+> We have additionally erected a temporary server at https://index.imaginary.cash with Fulcrum port at 50006, which will serve as a testing ground for post-activation contracts until the proposals' likely activation on Chipnet this November. Anyone interested in preliminary tests is welcome to use this facility as well.
+>
+> —<cite>[Bitcoin Cash Node](https://bitcoincashnode.org/) ([BCHN maintainers' opinion on the VM-Limits and Bigint upgrades for 2025](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25), October 25, 2024)</cite>
 
 ### Disapprove
 
