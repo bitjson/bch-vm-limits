@@ -161,7 +161,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [bestbchwallets.com](https://www.bestbchwallets.com/)                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitauth IDE](https://ide.bitauth.com)                                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcart](https://https://bitcart.ai/)                                    |   `v3.1.1`    |         |            |   ➖    |         |
-| [Bitcash](https://github.com/pybitcash/bitcash)                           |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Bitcash](https://github.com/pybitcash/bitcash)                           |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash Argentina](https://bitcoincashargentina.com/)               |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash City](https://bchcity.com)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitcoin Cash Explorer](https://explorer.salemkode.com/)                  |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -399,7 +399,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Emirex](https://emirex.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [eGifter](https://www.egifter.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [eToro](https://www.etoro.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Emerald DAO](https://emerald-dao-redemption.vercel.app/)      |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Emerald DAO](https://emerald-dao-redemption.vercel.app/)      |   `v3.1.1`    |   ✅    |            |         |         |
 | [EXMO](https://exmo.com/)                                      |   `v3.1.1`    |         |            |         |   ⏳    |
 | [F2Pool](https://www.f2pool.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Fastex](https://fastex.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
