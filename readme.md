@@ -230,7 +230,9 @@ The two-round hashing operations – `OP_HASH160` (`0xa9`) and `OP_HASH256` (`0x
 
 #### Transaction Signature Checking Operations
 
-Following the assembly of the signing serialization, the `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), and `OP_CHECKMULTISIGVERIFY` (`0xaf`) operations must compute the expected digest iterations for the length of the signing serialization (including the iteration in which the final result is double-hashed), adding the result to the spending transaction input's cumulative count. If the new total exceeds the hashing limit, validation fails.
+Before each signature check, the `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), and `OP_CHECKMULTISIGVERIFY` (`0xaf`) operations must add the count of hash digest iterations required for the length of the signing serialization (including the iteration in which the final result is double-hashed) to the spending transaction input's cumulative count. If the new total exceeds the hashing limit, validation fails.
+
+Note that the hash digest iteration count is incremented each time the signature check count (A.K.A. `SigChecks`) is incremented, even if a previous signature check used the same signing serialization. See [Rationale: Stateless Costing of Signing Serialization Hashing](./rationale.md#stateless-costing-of-signing-serialization-hashing).
 
 Note that hash digest iterations required to produce components of the signing serialization (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`) are excluded from the hashing limit, as implementations should cache these components across signature checks. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
 
@@ -470,6 +472,8 @@ This proposal evaluates notable alternatives for each design decision made in th
 
 This section summarizes the evolution of this document.
 
+- **Latest**
+  - Clarify costing of signing serialization hashing ([#38](https://github.com/bitjson/bch-vm-limits/issues/38))
 - **v3.1.1 – 2024-10-01** ([`6b87d517`](https://github.com/bitjson/bch-vm-limits/commit/6b87d517081f2fdba6a50b8e7fb9147321def609))
   - Add [overview of benchmarking process and results](./tests-and-benchmarks.md)
   - Add [Risk Assessment](./risk-assessment.md)

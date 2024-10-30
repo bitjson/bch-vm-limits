@@ -211,6 +211,10 @@ Alternatively, this proposal could set a consensus hashing limit without a lower
 
 </details>
 
+## Stateless Costing of Signing Serialization Hashing
+
+This proposal accounts for [the cost of hashing all signing serializations](readme.md#transaction-signature-checking-operations) by incrementing the spending transaction input's cumulative hash digest iteration count prior to incrementing the signature check count (A.K.A. `SigChecks`), regardless of whether a previous signature check used the same signing serialization. This avoids creating a requirement for all implementations to track previously-used signing serializations across signature checks; while some implementations may cache and reuse signing serialization digests, other implementations may reasonably re-hash all signing serializations.
+
 ## Exclusion of Signing Serialization Components from Hashing Limit
 
 This proposal includes [the cost of hashing all signing serializations](readme.md#transaction-signature-checking-operations) in the proposed `Hashing Limit`, but it excludes the cost of any hashing required to produce the internal components of signing serializations (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`). This configuration reduces protocol complexity while correctly accounting for the real-world hashing cost of `coveredBytecode` (A.K.A. `scriptCode`), particularly in [preventing abuse of `OP_CODESEPARATOR`](https://gist.github.com/markblundeberg/c2c88d25d5f34213830e48d459cbfb44), future increases to maximum standard unlocking bytecode length (A.K.A. `MAX_TX_IN_SCRIPT_SIG_SIZE` – 1,650 bytes), and/or increases to consensus-maximum VM bytecode length (A.K.A. `MAX_SCRIPT_SIZE` – 10,000 bytes).
