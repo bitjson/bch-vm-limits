@@ -77,9 +77,9 @@ Responses from open source node and Virtual Machine (VM) implementations that su
 | [Bitcoin Cash Node](https://bitcoincashnode.org/)       |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Unlimited](https://www.bitcoinunlimited.info/) |   `v3.1.1`    |         |            |   ➖    |         |
 | [Bitcoin Verde](https://bitcoinverde.org/)              |   `v3.1.1`    |   ✅    |            |         |         |
-| [Flowee](https://flowee.org/products/hub/)              |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Flowee](https://flowee.org/products/hub/)              |   `v3.1.1`    |         |     ❌     |         |         |
 | [Libauth](https://libauth.org/)                         |   `v3.1.1`    |   ✅    |            |         |         |
-| [Knuth](https://kth.cash/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Knuth](https://kth.cash/)                              |   `v3.1.1`    |   ✅    |            |         |         |
 
 ### Wallets
 
@@ -94,7 +94,7 @@ Responses from wallets that support Bitcoin Cash.
 | [Bitpie](https://bitpie.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BlockParty Wallet](https://blockparty.sh/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Cashonize](https://cashonize.com/)                              |   `v3.1.1`    |   ✅    |            |         |         |
-| [CashAddress.org](https://cashaddress.org/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
+| [CashAddress.org](https://cashaddress.org/)                      |   `v3.1.1`    |   ✅    |            |         |         |
 | [Cashual Wallet](https://gitlab.com/monsterbitar/cashual-wallet) |   `v3.1.1`    |   ✅    |            |         |         |
 | [Cake Wallet](https://cakewallet.com/)                           |   `v3.1.1`    |         |            |   ➖    |         |
 | [Coin Wallet](https://coin.space/)                               |   `v3.1.1`    |         |            |   ➖    |         |
@@ -106,7 +106,7 @@ Responses from wallets that support Bitcoin Cash.
 | [Electron Cash](https://electroncash.org/)                       |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Ellipal Wallet](https://www.ellipal.com/)                       |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Exodus](https://www.exodus.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Flowee Pay](https://flowee.org/products/pay/)                   |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Flowee Pay](https://flowee.org/products/pay/)                   |   `v3.1.1`    |         |     ❌     |         |         |
 | [FullStack.Cash](https://fullstack.cash/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Guarda](https://guarda.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [imToken](https://token.im/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -165,7 +165,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Bitcoin Cash Argentina](https://bitcoincashargentina.com/)               |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash City](https://bchcity.com)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitcoin Cash Explorer](https://explorer.salemkode.com/)                  |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Bitcoin Cash Foundation](https://bitcoincashfoundation.org/)             |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Bitcoin Cash Foundation](https://bitcoincashfoundation.org/)             |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash Hangout](https://rss.com/podcasts/fiendishcrypto/)          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitcoin Cash Podcast](https://bitcoincashpodcast.com/)                   |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash Testnet Faucet](https://tbch.googol.cash)                   |   `v3.1.1`    |   ✅    |            |         |         |
@@ -173,7 +173,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [BitcoinBCH.com](https://bitcoinbch.com/)                                 |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitcoinCash Nigeria](https://bch.ng/)                                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitcoinCash.org](https://bitcoincash.org/)                               |   `v3.1.1`    |   ✅    |            |         |         |
-| [BitcoinCashClient](https://github.com/david-shattuck/BitcoinCashClient)  |   `v3.1.1`    |         |            |         |   ⏳    |
+| [BitcoinCashClient](https://github.com/david-shattuck/BitcoinCashClient)  |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitcoinCashResearch.org](https://bitcoincashresearch.org/)               |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BitcoinFees.cash](https://bitcoinfees.cash/)                             |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BitcoinOutLoud](https://www.youtube.com/@BitcoinOutLoud)                 |   `v3.1.1`    |   ✅    |            |         |         |
@@ -195,11 +195,13 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [CasualBCH Podcast](casualbch.cash)                                       |   `v3.1.1`    |   ✅    |            |         |         |
 | [Coin Center](https://www.coincenter.org/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Developers.Cash](https://developers.cash/)                               |   `v3.1.1`    |   ✅    |            |         |         |
+| [Discover.cash](https://discover.cash/)                                   |   `v3.1.1`    |   ✅    |            |         |         |
 | [Documentation.cash](https://documentation.cash/)                         |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Easier Flipstarter](https://gitlab.com/uak/easier-flipstarter)           |   `v3.1.1`    |   ✅    |            |         |         |
 | [Flipstarter.cash](https://flipstarter.cash/)                             |   `v3.1.1`    |   ✅    |            |         |         |
 | [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/) |   `v3.1.1`    |   ✅    |            |         |         |
-| [Flowee Products](https://flowee.org/products/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Flipwatch](https://flipwatch.org/)                                       |   `v3.1.1`    |   ✅    |            |         |         |
+| [Flowee Products](https://flowee.org/products/)                           |   `v3.1.1`    |         |     ❌     |         |         |
 | [Fountainhead Cash](https://fountainhead.cash/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Fulcrum](https://github.com/cculianu/Fulcrum)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Future Bitcoin Cash](https://futurebitcoin.cash)                         |   `v3.1.1`    |   ✅    |            |         |         |
@@ -213,6 +215,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Knuth Libraries](https://github.com/k-nuth)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Mainnet.cash](https://mainnet.cash/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [Meep](https://github.com/gcash/meep)                                     |   `v3.1.1`    |         |            |         |         |
+| [Melroy's BCH Explorer](https://explorer.melroy.org)                      |   `v3.1.1`    |         |            |   ➖    |         |
 | [minisatoshi.cash](https://minisatoshi.cash/)                             |   `v3.1.1`    |   ✅    |            |         |         |
 | [NeonDaThal](https://www.youtube.com/@NeonDaThal/)                        |   `v3.1.1`    |   ✅    |            |         |         |
 | [One.Surgery](https://one.surgery/)                                       |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -230,8 +233,8 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [r/btc](https://www.reddit.com/r/btc/)                                    |   `v3.1.1`    |         |            |   ➖    |         |
 | [r/cashtokens](https://www.reddit.com/r/cashtokens/)                      |   `v3.1.1`    |         |            |   ➖    |         |
 | [rbch](https://github.com/Rucknium/rbch)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Rostrum](https://gitlab.com/bitcoinunlimited/rostrum)                    |   `v3.1.1`    |         |            |         |   ⏳    |
-| [rust-bitcoincash](https://gitlab.com/rust-bitcoincash/rust-bitcoincash/) |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Rostrum](https://gitlab.com/bitcoinunlimited/rostrum)                    |   `v3.1.1`    |   ✅    |            |         |         |
+| [rust-bitcoincash](https://gitlab.com/rust-bitcoincash/rust-bitcoincash/) |   `v3.1.1`    |   ✅    |            |         |         |
 | [ScanToPay.cash](https://scantopay.cash/)                                 |   `v3.1.1`    |   ✅    |            |         |         |
 | [Shinobi Art Engine](https://github.com/cashninjas/shinobi-art-engine)    |   `v3.1.1`    |   ✅    |            |         |         |
 | [slp.dev](https://slp.dev/)                                               |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -262,7 +265,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Antpool](https://www.antpool.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Anycoin Direct](https://anycoindirect.eu/)                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [AnyHedge](https://anyhedge.com/)                              |   `v3.1.1`    |   ✅    |            |         |         |
-| [Aptissio](https://www.aptissio.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Aptissio](https://www.aptissio.com/)                          |   `v3.1.1`    |   ✅    |            |         |         |
 | [APMEX](https://www.apmex.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Atani](https://atani.com/)                                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [ArzPaya](https://arzpaya.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -320,7 +323,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Blockchain.com](https://blockchain.com/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Blockchair](https://blockchair.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BlockNG](https://blockng.money/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Blockonomics](https://www.blockonomics.co/)                   |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Blockonomics](https://www.blockonomics.co/)                   |   `v3.1.1`    |   ✅    |            |         |         |
 | [BNS](https://bitbns.com/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BTC Markets](https://www.btcmarkets.net/)                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BTCBOX](https://www.btcbox.co.jp/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -334,7 +337,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [BYDFi](https://www.bydfi.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Cash-Ninjas](https://ninjas.cash/)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Cashrain](https://cashrain.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Cauldron](https://www.cauldron.quest/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Cauldron](https://www.cauldron.quest/)                        |   `v3.1.1`    |   ✅    |            |         |         |
 | [CEX.IO](https://cex.io/)                                      |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Chaintip](https://www.chaintip.org/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Changelly](https://changelly.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -419,7 +422,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Goblins.cash](https://goblins.cash/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [GoCrypto](https://gocrypto.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Godex.io](https://godex.io/)                                  |   `v3.1.1`    |         |            |   ➖    |         |
-| [GoUrl.io](https://gourl.io/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
+| [GoUrl.io](https://gourl.io/)                                  |   `v3.1.1`    |   ✅    |            |         |         |
 | [Grayscale Investments](https://grayscale.com/)                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Haveno](https://haveno-reto.com/)                             |   `v3.1.1`    |         |            |         |   ⏳    |
 | [HitBTC](https://hitbtc.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -457,6 +460,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Mining-Dutch](https://www.mining-dutch.nl/)                   |   `v3.1.1`    |         |            |         |   ⏳    |
 | [MistSwap](https://mistswap.fi/)                               |   `v3.1.1`    |         |            |         |   ⏳    |
 | [MoonPay](https://www.moonpay.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Moria](https://www.moria.money/)                              |   `v3.1.1`    |   ✅    |            |         |         |
 | [Mudrex](https://mudrex.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Mullvad](https://mullvad.net/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [N.exchange](https://n.exchange/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -501,7 +505,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [Reku](https://reku.id/)                                       |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Revolut](https://www.revolut.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [RamNode](https://ramnode.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Riften Labs](https://www.riftenlabs.com/)                     |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Riften Labs](https://www.riftenlabs.com/)                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [Robinhood](https://robinhood.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Rocketr](https://rocketr.net/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [SatoshiDice](https://satoshidice.com/)                        |   `v3.1.1`    |   ✅    |            |         |         |
@@ -600,8 +604,15 @@ The following articles have been published in support of this CHIP:
 - [CashScript](https://cashscript.org/): [Statement via github.com](https://github.com/CashScript/cashscript/issues/219#issuecomment-2428914826) (October 22, 2024)
 - [Bitcoin.com](https://www.bitcoin.com/): [A Major Improvement to Bitcoin Cash Will Smash Developer Bottlenecks](https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/) (October 22, 2024)
 - [FutureBitcoin.cash](https://futurebitcoin.cash/): [FBCH supports CHIP-2021-05 VM Limits](https://futurebitcoin.cash/vm-limits) (October 23, 2024)
+- [2qx](https://github.com/2qx): [Statement via memo.cash](https://memo.cash/post/e4e121bed1db8e20a598cddfe5e15799e4355176bdf0616dbdfe2f96929d6930) (October 23, 2024)
 - [Bitcoin Cash Podcast](https://bitcoincashpodcast.com/): [CHIP Endorsement May 2025](https://x.com/TheBCHPodcast/status/1849501507613253692) (October 24, 2024)
 - [Bitcoin Cash Node](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25): [BCHN maintainers' opinion on the VM-Limits and Bigint upgrades for 2025](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25) (October 25, 2024)
+- [Aptissio](https://aptissio.com/): [Statement via x.com](https://x.com/aptissio/status/1851778201988816963) (October 30, 2024)
+- [A Fifth of Gaming](https://afifthofgaming.com/): [Statement via x.com](https://x.com/a5thofgaming/status/1852467063429685553) (November 1, 2024)
+- [Knuth](https://kth.cash/): [Statement via x.com](https://x.com/KnuthNode/status/1854169580463354297) (November 6, 2024)
+- [CheapLightning](https://www.riftenlabs.com/): [Cheapy Supports the VMLA and Big Int CHIPS](https://read.cash/@CheapLightning/cheapy-supports-the-vmla-and-big-int-chips-3157c663) (November 9, 2024)
+- [Bitcoin Cash Foundation](https://bitcoincashfoundation.org/): [Statement via x.com](https://x.com/BCHF_ORG/status/1855289793695092951) (November 9, 2024)
+- [Riften Labs](https://www.riftenlabs.com/): [Statement via x.com](https://x.com/RiftenLabs/status/1855935826749698228) (November 11, 2024)
 
 The following statements have been submitted in support of this CHIP.
 
@@ -849,7 +860,7 @@ The following statements have been submitted in support of this CHIP.
 
 > The VM-limit CHIP is a much better retooling of computation and cost trade-offs to safely expand the potential of the VM without impacting performance. Great work!
 >
-> —<cite>2qx ([memo](https://memo.cash/a/e4e121bed1)) Independent Bitcoin Application Developer, [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor, [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
+> —<cite>2qx ([via Memo.cash](https://memo.cash/post/e4e121bed1db8e20a598cddfe5e15799e4355176bdf0616dbdfe2f96929d6930)) [Future Bitcoin Cash](https://futurebitcoin.cash), [Unspent](https://unspent.cash), [Unspent Phi](https://unspent.app), [mainnet-js](https://github.com/mainnet-cash/mainnet-js) contributor, [awesomebitcoin.cash](https://awesomebitcoin.cash/)</cite>
 
 > SatoshiDice fully supports both Proposals - Yes to both! We echo the sentiments of Bitcoin.com: https://news.bitcoin.com/a-major-improvement-to-bitcoin-cash-will-smash-developer-bottlenecks/
 >
@@ -873,11 +884,29 @@ The following statements have been submitted in support of this CHIP.
 >
 > —<cite>[Bitcoin Cash Node](https://bitcoincashnode.org/) ([BCHN maintainers' opinion on the VM-Limits and Bigint upgrades for 2025](https://bitcoincashnode.org/en/newsroom/bchn-statement-on-2025-chips-2024-10-25), October 25, 2024)</cite>
 
+> The BCHF endorses both CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits and CHIP-2024-07 BigInt: High-Precision Arithmetic for Bitcoin Cash, and wish to thank Jason Dreyzehner and everyone who worked tirelessly to make this happen.
+>
+> —<cite>[Bitcoin Cash Foundation](https://bitcoincashfoundation.org/) ([@BCHF_ORG](https://x.com/BCHF_ORG/status/1855289793695092951))</cite>
+
+> I, Cheap Lightning endorse both CHIP-2021-05 VM Limits: Targeted Virtual Machine Limits and CHIP-2024-07 BigInt: High-Precision Arithmetic for Bitcoin Cash, and wish to thank Jason Dreyzehner and everyone who worked tirelessly to make this happen\*
+>
+> \* https://read.cash/@CheapLightning/cheapy-supports-the-vmla-and-big-int-chips-3157c663
+>
+> —<cite>Cheap Lightning ([@CheapLightning](https://x.com/CheapLightning/status/1855288825926521230)), [Bitcoin Cash Foundation](https://bitcoincashfoundation.org/), [Flipwatch](https://flipwatch.org/), [Discover.cash](https://discover.cash/)</cite>
+
 ### Disapprove
 
 The following statements have been submitted from individuals and organizations that disapprove of this CHIP.
 
-_(None)_
+> The ideas look very good and clearly intend to make the capabilities next gen, which is great. The proposal is lacking in the parts where we can understand the actual impact to scaling and operations.
+>
+> There isn't any wall-clock analysis to that should be front and center on the risk-assessment side. Without putting in the hours ourselves it is nigh impossible to figure out how long it will take to validate transactions or blocks that push the boundaries of what is allowed.
+>
+> We can't approve it without such basic analysis, but giving a vote of disapproval is also too far, the benefits are great. Maybe we'll see a report on actual impact (linking to data) before the May upgrade. That would be ideal.
+>
+> —<cite>[Flowee](https://flowee.org) ([Via github.com](https://github.com/bitjson/bch-vm-limits/issues/37))</cite>
+
+**Maintainer Response**: Please see [Tests & Benchmarks](./tests-and-benchmarks.md) and also note the 10-100x node performance safety margin described in [Risk Assessment: Expanded Node Performance Safety Margin](./risk-assessment.md#expanded-node-performance-safety-margin).
 
 ### Neutral
 
