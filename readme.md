@@ -232,7 +232,7 @@ The two-round hashing operations – `OP_HASH160` (`0xa9`) and `OP_HASH256` (`0x
 
 Before each signature check, the `OP_CHECKSIG` (`0xac`), `OP_CHECKSIGVERIFY` (`0xad`), `OP_CHECKMULTISIG` (`0xae`), and `OP_CHECKMULTISIGVERIFY` (`0xaf`) operations must add the count of hash digest iterations required for the length of the signing serialization (including the iteration in which the final result is double-hashed) to the spending transaction input's cumulative count. If the new total exceeds the hashing limit, validation fails.
 
-Note that the hash digest iteration count is incremented each time the signature check count (A.K.A. `SigChecks`) is incremented, even if a previous signature check used the same signing serialization. See [Rationale: Stateless Costing of Signing Serialization Hashing](./rationale.md#stateless-costing-of-signing-serialization-hashing).
+Note that the hash digest iteration count is incremented each time a non-null signature is checked, even if a previous signature check used the same signing serialization. See [Rationale: Stateless Costing of Signing Serialization Hashing](./rationale.md#stateless-costing-of-signing-serialization-hashing).
 
 Note that hash digest iterations required to produce components of the signing serialization (i.e. `hashPrevouts`, `hashUtxos`, `hashSequence`, and `hashOutputs`) are excluded from the hashing limit, as implementations should cache these components across signature checks. See [Rationale: Exclusion of Signing Serialization Components from Hashing Limit](rationale.md#exclusion-of-signing-serialization-components-from-hashing-limit).
 
@@ -310,7 +310,7 @@ For example, `<'a'> <'b'> <'c'> <2> OP_ROLL` (producing `<'b'> <'c'> <'a'>`) is 
 
 #### Arithmetic Operation Cost
 
-To account for the cost of encoding VM numbers, the sum of all numeric output lengths with the potential to exceed `2**32` are added to the operation cost of all operations with such outputs: `OP_1ADD` (`0x8b`), `OP_1SUB` (`0x8c`), `OP_NEGATE` (`0x8f`), `OP_ABS` (`0x90`), `OP_NOT` (`0x91`), `OP_0NOTEQUAL` (`0x92`), `OP_ADD` (`0x93`), `OP_SUB` (`0x94`), `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), `OP_MOD` (`0x97`), `OP_BOOLAND` (`0x9a`), `OP_BOOLOR` (`0x9b`), `OP_NUMEQUAL` (`0x9c`), `OP_NUMEQUALVERIFY` (`0x9d`), `OP_NUMNOTEQUAL` (`0x9e`), `OP_LESSTHAN` (`0x9f`), `OP_GREATERTHAN` (`0xa0`), `OP_LESSTHANOREQUAL` (`0xa1`), `OP_GREATERTHANOREQUAL` (`0xa2`), `OP_MIN` (`0xa3`), `OP_MAX` (`0xa4`), and `OP_WITHIN` (`0xa5`); e.g. given terms `a b -> c` (such as in `<a> <b> OP_ADD`), the operation cost is: the base cost (`100`), plus the cost of re-encoding the output (`c.length`), plus the byte length of the result (`c.length`), for a final formula of `100 + (2 * c.length)`. See [Rationale: Inclusion of Numeric Encoding in Operation Costs](rationale.md#inclusion-of-numeric-encoding-in-operation-costs).
+To account for the cost of encoding VM numbers, the sum of all numeric output lengths with the potential to exceed `2**32` are added to the operation cost of all operations with such outputs: `OP_1ADD` (`0x8b`), `OP_1SUB` (`0x8c`), `OP_NEGATE` (`0x8f`), `OP_ABS` (`0x90`), `OP_ADD` (`0x93`), `OP_SUB` (`0x94`), `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), `OP_MOD` (`0x97`), `OP_MIN` (`0xa3`), and `OP_MAX` (`0xa4`); e.g. given terms `a b -> c` (such as in `<a> <b> OP_ADD`), the operation cost is: the base cost (`100`), plus the cost of re-encoding the output (`c.length`), plus the byte length of the result (`c.length`), for a final formula of `100 + (2 * c.length)`. See [Rationale: Inclusion of Numeric Encoding in Operation Costs](rationale.md#inclusion-of-numeric-encoding-in-operation-costs).
 
 To account for <code>O(n<sup>2</sup>)</code> worst-case performance, the operation cost of `OP_MUL` (`0x95`), `OP_DIV` (`0x96`), and `OP_MOD` (`0x97`) are also increased by the product of their input lengths, i.e. given terms `a b -> c`, the operation cost is: the base cost (`100`) plus the cost of re-encoding the output (`c.length`), plus the byte length of the result (`c.length`), plus the product of the input lengths (`a.length * b.length`), for a final formula of `100 + (2 * c.length) + (a.length * b.length)`.
 
@@ -474,6 +474,7 @@ This section summarizes the evolution of this document.
 
 - **Latest**
   - Clarify costing of signing serialization hashing ([#38](https://github.com/bitjson/bch-vm-limits/issues/38))
+  - Correct list of operations with numeric outputs ([#39](https://github.com/bitjson/bch-vm-limits/issues/39))
 - **v3.1.1 – 2024-10-01** ([`6b87d517`](https://github.com/bitjson/bch-vm-limits/commit/6b87d517081f2fdba6a50b8e7fb9147321def609))
   - Add [overview of benchmarking process and results](./tests-and-benchmarks.md)
   - Add [Risk Assessment](./risk-assessment.md)
