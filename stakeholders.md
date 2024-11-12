@@ -183,7 +183,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [CashAccount.info](https://www.cashaccount.info/)                         |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashChannels.org](http://cashchannels.org/)                              |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashFusion.org](https://cashfusion.org/)                                 |   `v3.1.1`    |         |            |   ➖    |         |
-| [CashFusion Red Team](https://fusionstats.redteam.cash/)                  |   `v3.1.1`    |         |            |         |   ⏳    |
+| [CashFusion Red Team](https://fusionstats.redteam.cash/)                  |   `v3.1.1`    |   ✅    |            |         |         |
 | [CashNodes.io](https://cashnodes.io/)                                     |   `v3.1.1`    |         |            |         |   ⏳    |
 | [cashp](https://github.com/Ekliptor/cashp)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [CashScript](https://cashscript.org/)                                     |   `v3.1.1`    |   ✅    |            |         |         |
