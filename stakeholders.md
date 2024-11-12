@@ -232,7 +232,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [r/bitcoincash](https://www.reddit.com/r/bitcoincash/)                    |   `v3.1.1`    |         |            |   ➖    |         |
 | [r/btc](https://www.reddit.com/r/btc/)                                    |   `v3.1.1`    |         |            |   ➖    |         |
 | [r/cashtokens](https://www.reddit.com/r/cashtokens/)                      |   `v3.1.1`    |         |            |   ➖    |         |
-| [rbch](https://github.com/Rucknium/rbch)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
+| [rbch](https://github.com/Rucknium/rbch)                                  |   `v3.1.1`    |   ✅    |            |         |         |
 | [Rostrum](https://gitlab.com/bitcoinunlimited/rostrum)                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [rust-bitcoincash](https://gitlab.com/rust-bitcoincash/rust-bitcoincash/) |   `v3.1.1`    |   ✅    |            |         |         |
 | [ScanToPay.cash](https://scantopay.cash/)                                 |   `v3.1.1`    |   ✅    |            |         |         |
