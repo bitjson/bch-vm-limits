@@ -87,6 +87,7 @@ Responses from wallets that support Bitcoin Cash.
 
 | Wallet                                                           | As of Version | Approve | Disapprove | Neutral | Pending |
 | ---------------------------------------------------------------- | :-----------: | :-----: | :--------: | :-----: | :-----: |
+| [Amagi Wallet](https://amagi.finance/)                           |   `v3.1.1`    |   ✅    |            |         |         |
 | [Atomic Wallet](https://atomicwallet.io/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
 | [`bchwallet`](https://github.com/gcash/bchwallet)                |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin.com Wallet](https://wallet.bitcoin.com/)                |   `v3.1.1`    |   ✅    |            |         |         |
@@ -262,6 +263,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [A Fifth of Gaming](https://afifthofgaming.com/)               |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Alagoria](https://alagoria.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Alfacoins](https://www.alfacoins.com/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Amagi Finance](https://amagi.finance/)                        |   `v3.1.1`    |   ✅    |            |         |         |
 | [Antpool](https://www.antpool.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Anycoin Direct](https://anycoindirect.eu/)                    |   `v3.1.1`    |         |            |         |   ⏳    |
 | [AnyHedge](https://anyhedge.com/)                              |   `v3.1.1`    |   ✅    |            |         |         |
