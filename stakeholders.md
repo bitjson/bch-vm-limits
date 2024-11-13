@@ -161,7 +161,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [badgers.cash](https://badgers.cash)                                      |   `v3.1.1`    |   ✅    |            |         |         |
 | [bestbchwallets.com](https://www.bestbchwallets.com/)                     |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitauth IDE](https://ide.bitauth.com)                                    |   `v3.1.1`    |   ✅    |            |         |         |
-| [Bitcart](https://https://bitcart.ai/)                                    |   `v3.1.1`    |         |            |   ➖    |         |
+| [Bitcart](https://https://bitcart.ai/)                                    |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcash](https://github.com/pybitcash/bitcash)                           |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash Argentina](https://bitcoincashargentina.com/)               |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash City](https://bchcity.com)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -169,7 +169,6 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Bitcoin Cash Foundation](https://bitcoincashfoundation.org/)             |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash Hangout](https://rss.com/podcasts/fiendishcrypto/)          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bitcoin Cash Podcast](https://bitcoincashpodcast.com/)                   |   `v3.1.1`    |   ✅    |            |         |         |
-| [Bitcoin Cash Testnet Faucet](https://tbch.googol.cash)                   |   `v3.1.1`    |   ✅    |            |         |         |
 | [Bitcoin Cash TV](https://bitcoincashtv.com/)                             |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitcoinBCH.com](https://bitcoinbch.com/)                                 |   `v3.1.1`    |   ✅    |            |         |         |
 | [BitcoinCash Nigeria](https://bch.ng/)                                    |   `v3.1.1`    |   ✅    |            |         |         |
@@ -755,7 +754,7 @@ The following statements have been submitted in support of this CHIP.
 
 > The VM Limits and BigInt CHIPs sound great, I support activation in 2025. I think the cost for the network is that nodes have to implement high-precision arithmetic which will make accounting more accurate. I love to have more tests and benchmark so we can move forward with confidence.
 >
-> —<cite>Damascene, [Testnet Faucet](tbch.googol.cash), [Hur project](https://hur-project.gitlab.io/hur-freelancers/), [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/)</cite>
+> —<cite>Damascene, [Googol.cash Testnet Faucet](tbch.googol.cash), [Hur project](https://hur-project.gitlab.io/hur-freelancers/), [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/)</cite>
 
 > As a developer of Opal Wallet, I fully endorse the activation of CHIP-2024-07-BigInt and CHIP-2021-05-vm-limits in the upcoming 2025 Bitcoin Cash upgrade. These improvements are key to realizing Bitcoin Cash's vision as true electronic cash, optimizing contracts and transactions on-chain.
 > For Opal Wallet, these CHIPs will directly enhance features such as:
