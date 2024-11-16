@@ -205,7 +205,7 @@ Responses from open source libraries, indexers, educational resources, and commu
 | [Fountainhead Cash](https://fountainhead.cash/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Fulcrum](https://github.com/cculianu/Fulcrum)                            |   `v3.1.1`    |   ✅    |            |         |         |
 | [Future Bitcoin Cash](https://futurebitcoin.cash)                         |   `v3.1.1`    |   ✅    |            |         |         |
-| [Googol.cash Testnet Faucet](https://tbch4.googol.cash/)                  |   `v3.1.1`    |   ✅    |            |         |         |
+| [Googol.cash Testnet Faucet](https://tbch.googol.cash/)                   |   `v3.1.1`    |   ✅    |            |         |         |
 | [Haskoin](https://github.com/haskoin/haskoin-core)                        |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Jedex](https://github.com/bitjson/jedex)                                 |   `v3.1.1`    |   ✅    |            |         |         |
 | [Johoe's Mempool Statistics](https://jochen-hoenicke.de/queue/)           |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -332,7 +332,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [BTCPOP](https://btcpop.co/)                                   |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Buda.com](https://www.buda.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bullish](https://bullish.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
-| [Buy Hodl Sell](https://buyhodlsell.com/)                      |   `v3.1.1`    |         |            |         |   ⏳    |
+| [Buy Hodl Sell](https://buyhodlsell.com/)                      |   `v3.1.1`    |   ✅    |            |         |         |
 | [BVOX](https://www.bvox.com/)                                  |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Bybit](https://www.bybit.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
 | [BYDFi](https://www.bydfi.com/)                                |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -361,7 +361,7 @@ Responses from exchanges, miners, services, and other businesses.
 | [CoinCola](https://www.coincola.com/)                          |   `v3.1.1`    |         |            |         |   ⏳    |
 | [CoinEx](https://www.coinex.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
 | [CoinGate](https://coingate.com/)                              |   `v3.1.1`    |         |            |         |   ⏳    |
-| [CoinGecko](https://www.coingecko.com/)                        |   `v3.1.1`    |         |            |         |   ⏳    |
+| [CoinGecko](https://www.coingecko.com/)                        |   `v3.1.1`    |         |            |   ➖    |         |
 | [Coinhub](https://coinhubatm.com/)                             |   `v3.1.1`    |         |            |         |   ⏳    |
 | [Coinify](https://www.coinify.com/)                            |   `v3.1.1`    |         |            |         |   ⏳    |
 | [CoinLedger](https://coinledger.io/)                           |   `v3.1.1`    |         |            |         |   ⏳    |
@@ -754,7 +754,7 @@ The following statements have been submitted in support of this CHIP.
 
 > The VM Limits and BigInt CHIPs sound great, I support activation in 2025. I think the cost for the network is that nodes have to implement high-precision arithmetic which will make accounting more accurate. I love to have more tests and benchmark so we can move forward with confidence.
 >
-> —<cite>Damascene, [Googol.cash Testnet Faucet](tbch.googol.cash), [Hur project](https://hur-project.gitlab.io/hur-freelancers/), [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/)</cite>
+> —<cite>Damascene, [Googol.cash Testnet Faucet](https://tbch.googol.cash), [Hur project](https://hur-project.gitlab.io/hur-freelancers/), [Flipstarters on Bitcoin Cash](https://flipstarters.bitcoincash.network/)</cite>
 
 > As a developer of Opal Wallet, I fully endorse the activation of CHIP-2024-07-BigInt and CHIP-2021-05-vm-limits in the upcoming 2025 Bitcoin Cash upgrade. These improvements are key to realizing Bitcoin Cash's vision as true electronic cash, optimizing contracts and transactions on-chain.
 > For Opal Wallet, these CHIPs will directly enhance features such as:
