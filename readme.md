@@ -468,6 +468,11 @@ This proposal evaluates notable alternatives for each design decision made in th
 - [The Bitcoin Cash Podcast #130: Limits & BigInt CHIPs feat. Jason Dreyzehner](https://www.youtube.com/watch?v=dTMcgW1iHrU)
 - [General Protocol Spaces (34): General Bull 34 of n - Jason Dreyzehner AMA](https://www.youtube.com/watch?v=xNQK3Ula2Ao)
 
+## Acknowledgements
+
+Thank you to the following contributors for reviewing and contributing improvements to this proposal, providing feedback, and promoting consensus among stakeholders:
+[Calin Culianu](https://github.com/cculianu), [bitcoincashautist](https://github.com/A60AB5450353F40E), [Andrew#128](https://gitlab.com/andrew-128), [Fernando Pelliccioni](https://gitlab.com/fpelliccioni), [Mathieu Geukens](https://github.com/mr-zwets), [Joshua Green](https://github.com/joshmg), [OPReturnCode](https://github.com/OPReturnCode), [Jeremy](https://bitcoincashpodcast.com/), [Kallisti.cash](https://kallisti.io), [Corbin Fraser](https://corbinfraser.com/), [imaginary_username](https://gitlab.com/im_uname), [John Nieri](https://gitlab.com/emergent-reasons), [Jonathan Silverblood](https://gitlab.com/monsterbitar), [Josh Ellithorpe](https://github.com/zquestz), [John Moriarty](https://x.com/BitcoinOutLoud), [minisatoshi](https://minisatoshi.cash/), [Andrew Groot](https://github.com/thesquaregroot), [Tom Zander](https://github.com/zander), [Rosco Kalis](https://github.com/rkalis), [Richard Brady](https://github.com/rnbrady).
+
 ## Changelog
 
 This section summarizes the evolution of this document.
