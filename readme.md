@@ -6,8 +6,8 @@
         Maintainer: Jason Dreyzehner
         Status: Draft
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-10-01
-        Version: 3.1.1
+        Latest Revision Date: 2024-11-11
+        Version: 3.1.2
 
 <details>
 
@@ -477,7 +477,7 @@ Thank you to the following contributors for reviewing and contributing improveme
 
 This section summarizes the evolution of this document.
 
-- **Latest**
+- **v3.1.2 – 2024-11-11** ([`ac0af7c6`](https://github.com/bitjson/bch-vm-limits/commit/ac0af7c6fb957cc8077089a598469740c563812b))
   - Clarify costing of signing serialization hashing ([#38](https://github.com/bitjson/bch-vm-limits/issues/38))
   - Correct list of operations with numeric outputs ([#39](https://github.com/bitjson/bch-vm-limits/issues/39))
 - **v3.1.1 – 2024-10-01** ([`6b87d517`](https://github.com/bitjson/bch-vm-limits/commit/6b87d517081f2fdba6a50b8e7fb9147321def609))
