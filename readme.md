@@ -4,10 +4,10 @@
         Type: Standards
         Layer: Consensus
         Maintainer: Jason Dreyzehner
-        Status: Draft
+        Status: Final
         Initial Publication Date: 2021-05-12
-        Latest Revision Date: 2024-11-11
-        Version: 3.1.2
+        Latest Revision Date: 2025-05-08
+        Version: 3.1.3
 
 <details>
 
@@ -477,6 +477,8 @@ Thank you to the following contributors for reviewing and contributing improveme
 
 This section summarizes the evolution of this document.
 
+- **v3.1.3 – 2025-05-08**
+  - Clarify and correct technical overview ([#43](https://github.com/bitjson/bch-vm-limits/issues/43))
 - **v3.1.2 – 2024-11-11** ([`ac0af7c6`](https://github.com/bitjson/bch-vm-limits/commit/ac0af7c6fb957cc8077089a598469740c563812b))
   - Clarify costing of signing serialization hashing ([#38](https://github.com/bitjson/bch-vm-limits/issues/38))
   - Correct list of operations with numeric outputs ([#39](https://github.com/bitjson/bch-vm-limits/issues/39))
