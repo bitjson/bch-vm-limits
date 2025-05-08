@@ -81,12 +81,12 @@ The following overview summarizes all changes proposed by this document to C++ i
 
 1. `MAX_SCRIPT_ELEMENT_SIZE` increases from `520` to `10000`.
 2. `nOpCount` becomes `nOpCost` (used to measure stack-pushed bytes and operation costs)
-3. A new `static inline pushstack` is added to match `popstack`; `pushstack` increments `nOpCost` by the item length.
+3. For every push to the stack, increment `nOpCost` by the item length. (See [Operation Costs](./operation-costs.md).)
 4. `if (opcode > OP_16 && ++nOpCount > MAX_OPS_PER_SCRIPT) { ... }` becomes `nOpCost += 100;` (not conditional, so also added for unexecuted and push operations).
 5. `case OP_ROLL:` adds `nOpCost += depth;`
 6. `case OP_AND/OP_OR/OP_XOR:` adds `nOpCost += result.size();`
-7. `case OP_1ADD...OP_0NOTEQUAL:` adds `nOpCost += bn.size();`, `case OP_ADD...OP_MAX:` adds `nOpCost += bn1.size() + bn2.size();`, `case OP_WITHIN:` adds `nOpCost += bn1.size() + bn2.size() + bn3.size();`
-8. `case OP_MUL/OP_DIV/OP_MOD:` adds `nOpCost += a.size() * b.size();`
+7. `case OP_1ADD...OP_ABS/OP_ADD...OP_MOD/OP_MIN/OP_MAX:` adds twice the push cost to account for numeric encoding, i.e. `nOpCost += 2 * result.size();`
+8. `case OP_MUL/OP_DIV/OP_MOD:` adds an additional `nOpCost += a.size() * b.size();`
 9. Hashing operations add `1 + ((message_length + 8) / 64)` to `nHashDigestIterations`, and `nOpCost += 192 * iterations;`.
 10. Same for signing operations (count iterations only for the top-level preimage, not `hashPrevouts`/`hashUtxos`/`hashSequence`/`hashOutputs`), plus `nOpCost += 26000 * sigchecks;` (and `nOpCount += nKeysCount;` is removed)
 11. `SigChecks` limits remain unchanged; similar density checks apply to `nHashDigestIterations` and `nOpCost`.
